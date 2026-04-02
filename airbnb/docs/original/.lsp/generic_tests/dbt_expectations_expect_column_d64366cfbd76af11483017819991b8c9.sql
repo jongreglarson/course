@@ -1,0 +1,1 @@
+{{ dbt_expectations.test_expect_column_value_lengths_to_be_between(column_name="review_text", min_value=10, model=get_where_subquery(ref('fct_reviews'))) }}

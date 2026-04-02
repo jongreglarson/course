@@ -1,0 +1,1 @@
+{{ dbt_expectations.test_expect_table_row_count_to_equal_other_table(compare_model=ref('fct_reviews'), model=get_where_subquery(ref('mart_fullmoon_reviews'))) }}

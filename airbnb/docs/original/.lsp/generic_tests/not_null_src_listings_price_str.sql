@@ -1,0 +1,1 @@
+{{ test_not_null(column_name="price_str", model=get_where_subquery(ref('src_listings'))) }}

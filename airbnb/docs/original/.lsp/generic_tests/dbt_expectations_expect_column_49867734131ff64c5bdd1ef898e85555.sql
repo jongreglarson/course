@@ -1,0 +1,1 @@
+{{ dbt_expectations.test_expect_column_values_to_be_between(column_name="review_date", max_value="current_date", min_value="'2008-01-01'::date", model=get_where_subquery(ref('src_reviews'))) }}

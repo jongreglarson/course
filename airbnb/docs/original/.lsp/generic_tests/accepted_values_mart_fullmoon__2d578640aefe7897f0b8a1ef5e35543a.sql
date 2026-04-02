@@ -1,0 +1,1 @@
+{{ test_accepted_values(column_name="review_sentiment", model=get_where_subquery(ref('mart_fullmoon_reviews')), values=["positive","neutral","negative"]) }}

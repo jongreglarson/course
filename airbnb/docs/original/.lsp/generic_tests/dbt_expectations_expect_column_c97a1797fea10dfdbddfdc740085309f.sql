@@ -1,0 +1,1 @@
+{{ dbt_expectations.test_expect_column_value_lengths_to_be_between(column_name="listing_name", max_value=500, min_value=4, model=get_where_subquery(ref('dim_listings_cleansed'))) }}
