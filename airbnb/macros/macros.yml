@@ -1,0 +1,177 @@
+macros:
+
+  # -----------------------------------------------------------------------
+  # Production macros
+  # -----------------------------------------------------------------------
+
+  - name: generate_date_spine
+    description: >
+      Generates a continuous sequence of date values between two bounds
+      (inclusive) using Snowflake's TABLE(GENERATOR(...)) function. Use this
+      to ensure every period in a range has a row — critical for trend charts
+      and occupancy analysis where zero-review days must display as 0 rather
+      than simply being absent from results. Supports any Snowflake DATEADD
+      datepart (day, week, month, quarter, year).
+    arguments:
+      - name: start_date
+        type: SQL date expression (string)
+        description: >
+          The first date in the spine. Pass a SQL date expression that
+          Snowflake can evaluate directly, e.g. "'2020-01-01'::date" or
+          "DATEADD(year, -1, current_date)".
+      - name: end_date
+        type: SQL date expression (string)
+        description: >
+          The last date in the spine (inclusive). e.g. "current_date" or
+          "'2024-12-31'::date".
+      - name: datepart
+        type: string
+        description: >
+          Granularity of the spine. Default: 'day'. Accepts any Snowflake
+          DATEADD datepart: 'day', 'week', 'month', 'quarter', 'year'.
+
+  - name: generate_surrogate_key
+    description: >
+      Project wrapper around dbt_utils.generate_surrogate_key that adds
+      compile-time validation and self-documenting SQL output. Raises a
+      clear compiler error if called with an empty column list, and emits a
+      SQL comment in the compiled output listing the columns that compose
+      the key so that lineage is visible without opening the model source.
+      All hashing and null-handling is delegated to dbt_utils, which
+      coalesces each column to an empty string before MD5 hashing the
+      concatenated result.
+    arguments:
+      - name: column_names
+        type: list of strings
+        description: >
+          Ordered list of column names that together uniquely identify a
+          row. Order matters — ['a','b'] and ['b','a'] produce different
+          hashes. Must contain at least one element.
+      - name: alias
+        type: string
+        description: >
+          Name for the output column. Default: 'surrogate_key'.
+
+  - name: pivot_column
+    description: >
+      Generates a pivot query that turns the distinct values of a categorical
+      column into separate aggregate columns using CASE WHEN expressions.
+      Supports two modes: pass explicit values for stable production column
+      names, or omit values to auto-discover distinct non-null values from
+      the source model at compile time via run_query. Output column names
+      are normalised to lowercase with spaces and slashes replaced by
+      underscores. Raises a compiler error if no values can be found.
+    arguments:
+      - name: source_model
+        type: relation
+        description: >
+          The model to pivot, passed as a ref() or source() expression,
+          e.g. ref('fct_reviews').
+      - name: group_by_col
+        type: string
+        description: >
+          Column to group rows by in the output, e.g. 'listing_id'.
+      - name: pivot_col
+        type: string
+        description: >
+          Categorical column whose distinct values become output columns,
+          e.g. 'review_sentiment'.
+      - name: agg_func
+        type: string
+        description: >
+          SQL aggregate function applied inside each CASE WHEN expression.
+          Default: 'COUNT'.
+      - name: agg_col
+        type: string
+        description: >
+          Column to aggregate inside each CASE WHEN. Default: '1', which
+          works naturally with COUNT to produce a row count per bucket.
+      - name: values
+        type: list of strings
+        description: >
+          Explicit list of pivot values. When provided, the macro uses
+          these directly without querying the source. Recommended for
+          production models. Default: [] (auto-discover).
+
+  - name: no_empty_strings
+    description: >
+      Generates a WHERE clause predicate that filters out rows where any
+      string column is either NULL or an empty string. Iterates over all
+      columns in the relation using adapter.get_columns_in_relation and
+      emits a condition for each string-typed column. Intended for use in
+      custom data tests or model filtering logic.
+    arguments:
+      - name: model
+        type: relation
+        description: >
+          The relation to inspect. Passed as a ref() or source() expression.
+
+  - name: select_positive_values
+    description: >
+      Returns all rows from a model where a specified numeric column is
+      strictly greater than zero. Used as a utility for ad-hoc validation
+      queries and as the basis for the positive_values generic test.
+    arguments:
+      - name: model
+        type: relation
+        description: The relation to filter.
+      - name: column_name
+        type: string
+        description: The numeric column to test for positive values.
+
+  # -----------------------------------------------------------------------
+  # Generic tests
+  # -----------------------------------------------------------------------
+
+  - name: positive_values
+    description: >
+      Generic test that fails if any row in the model has a value less than
+      or equal to zero in the specified column. Returns the offending rows,
+      consistent with dbt's test contract (a passing test returns zero rows).
+      Used on price and minimum_nights to catch values that are technically
+      non-null but violate business rules.
+    arguments:
+      - name: model
+        type: relation
+        description: The model being tested.
+      - name: column_name
+        type: string
+        description: The numeric column to validate.
+
+  - name: minimum_row_count
+    description: >
+      Generic test that warns if the total row count of a model falls below
+      a specified threshold. Configured with severity 'warn' so a low row
+      count surfaces as a warning rather than a hard failure — appropriate
+      for catching unexpected data drops without blocking downstream runs.
+      Useful for incremental models (e.g. fct_reviews) where a full rebuild
+      producing suspiciously few rows should be investigated but not halt
+      the pipeline.
+    arguments:
+      - name: model
+        type: relation
+        description: The model being tested.
+      - name: min_row_count
+        type: integer
+        description: >
+          The minimum acceptable row count. A result set below this
+          threshold triggers a warning.
+
+  # -----------------------------------------------------------------------
+  # Learning / reference macros (not used in production models)
+  # -----------------------------------------------------------------------
+
+  - name: learn_logging
+    description: >
+      Educational macro demonstrating dbt's log() function and the
+      difference between silent logging (info=False, written to logs only)
+      and console logging (info=True, printed to terminal during dbt run).
+      Not used in production — call with `dbt run-operation learn_logging`.
+
+  - name: learn_variables
+    description: >
+      Educational macro demonstrating two ways to access variables in dbt:
+      Jinja-scoped variables set with {% set %}, and project-level variables
+      defined in dbt_project.yml and accessed with var(). The project-level
+      user_name variable is defined in dbt_project.yml under vars:.
+      Not used in production — call with `dbt run-operation learn_variables`.
