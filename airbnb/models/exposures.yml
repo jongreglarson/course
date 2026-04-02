@@ -1,0 +1,44 @@
+exposures:
+
+  - name: full_moon_sentiment_analysis
+    type: analysis
+    maturity: low
+    description: >
+      Exploratory analysis that breaks down guest review sentiment by lunar
+      cycle phase to test whether full moon proximity influences how guests
+      write about their stays. Groups reviews from mart_fullmoon_reviews by
+      is_full_moon and review_sentiment, returning a count matrix that shows
+      whether the distribution of positive, neutral, and negative reviews
+      differs meaningfully between full moon and non-full moon nights.
+
+      Maturity is 'low' because this is an exploratory query, not a
+      productionised dashboard. Findings from this analysis should inform
+      whether a more robust mart or metric is warranted.
+    depends_on:
+      - ref('mart_fullmoon_reviews')
+    owner:
+      name: Analytics Team
+      email: analytics@airbnb-project.com
+
+  - name: airbnb_core_reporting
+    type: dashboard
+    maturity: high
+    description: >
+      Core operational dashboards for the Airbnb analytics platform. Covers
+      listing inventory, pricing distribution, host performance (including
+      Superhost segmentation), and guest review volume and sentiment trends.
+      These dashboards are the primary analytical surface for business
+      stakeholders and are updated on the daily pipeline schedule.
+
+      Consumers should query dim_listings_w_hosts for any analysis combining
+      listing and host attributes, and fct_reviews for review-level metrics.
+      Raw dimension tables (dim_listings_cleansed, dim_hosts_cleansed) are
+      available for more granular joins.
+    depends_on:
+      - ref('dim_listings_w_hosts')
+      - ref('dim_hosts_cleansed')
+      - ref('dim_listings_cleansed')
+      - ref('fct_reviews')
+    owner:
+      name: Analytics Team
+      email: analytics@airbnb-project.com

@@ -1,0 +1,22 @@
+seeds:
+  - name: seed_full_moon_dates
+    description: >
+      Static reference table containing the calendar date of every full moon
+      from January 2009 through the present. Used by mart_fullmoon_reviews to
+      determine whether a guest review was written on the day immediately
+      following a full moon. The join applies a one-day offset
+      (DATEADD(DAY, 1, full_moon_date)) so that reviews written the day after
+      a full moon are labeled 'full moon' — the hypothesis being that guests
+      who experienced a stay during a full moon are more likely to write a
+      review the following day.
+
+      Source: publicly available lunar calendar data. Contains 272 full moon
+      dates. Update annually by appending new dates to the CSV and re-running
+      dbt seed.
+    columns:
+      - name: full_moon_date
+        description: >
+          The calendar date of a full moon event. Stored as a date value in
+          YYYY-MM-DD format. Each row represents one full moon. Used in a
+          LEFT JOIN against fct_reviews.review_date with a one-day offset to
+          flag reviews written the day after a full moon.

@@ -1,6 +1,20 @@
 snapshots:
   - name: scd_raw_hosts
     relation: source('airbnb', 'hosts')
+    description: >
+      Slowly Changing Dimension (Type 2) snapshot of the raw Airbnb hosts
+      table. Captures the full history of changes to host profiles over time
+      by recording a new row whenever the updated_at timestamp changes.
+      Each row represents one version of a host's profile, with dbt_valid_from
+      and dbt_valid_to columns marking the period during which that version
+      was current. Rows where dbt_valid_to IS NULL represent the current
+      state of the host.
+
+      Use this snapshot to answer historical questions such as: "Was this
+      host a Superhost at the time of a specific review?" or "When did a
+      host first achieve Superhost status?" Hard deletes in the source are
+      handled with the 'invalidate' strategy — deleted hosts receive a
+      dbt_valid_to timestamp rather than being removed from the snapshot.
     config:
       unique_key: id
       strategy: timestamp

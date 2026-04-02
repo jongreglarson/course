@@ -1,5 +1,13 @@
 unit_tests:
   - name: unittest_fullmoon_matcher
+    description: >
+      Validates the one-day offset logic in mart_fullmoon_reviews. The join
+      labels a review as 'full moon' when review_date equals full_moon_date
+      + 1 day — not when review_date equals full_moon_date itself. This test
+      confirms that boundary behaviour explicitly: a review on the full moon
+      date (2025-01-14) is NOT labeled 'full moon', while a review the day
+      after (2025-01-15) IS. A review with no adjacent full moon (2025-01-13)
+      is also confirmed as 'not full moon'.
     model: mart_fullmoon_reviews
     given:
       - input: ref('fct_reviews')

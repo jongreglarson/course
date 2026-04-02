@@ -1,6 +1,21 @@
 snapshots:
   - name: scd_raw_listings
     relation: source('airbnb', 'listings')
+    description: >
+      Slowly Changing Dimension (Type 2) snapshot of the raw Airbnb listings
+      table. Captures the full history of changes to listing details over
+      time by recording a new row whenever the updated_at timestamp changes.
+      Each row represents one version of a listing, with dbt_valid_from and
+      dbt_valid_to columns marking the period during which that version was
+      active. Rows where dbt_valid_to IS NULL represent the current state
+      of the listing.
+
+      Use this snapshot to answer historical questions such as: "What was
+      the price of this listing in Q3 last year?" or "When did this listing
+      change its minimum nights requirement?" Particularly valuable for
+      pricing trend analysis and understanding how inventory composition
+      has shifted over time. Hard deletes are handled with the 'invalidate'
+      strategy — delisted properties receive a dbt_valid_to timestamp.
     config:
       unique_key: id
       strategy: timestamp
