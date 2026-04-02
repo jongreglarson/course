@@ -1,27 +1,294 @@
 
 models:
+
+  # -----------------------------------------------------------------------
+  # SOURCE LAYER (ephemeral) — field renaming and source abstraction only
+  # -----------------------------------------------------------------------
+
+  - name: src_hosts
+    description: >
+      Staging layer for raw host data. Selects and renames fields from the
+      Airbnb source to establish consistent column naming conventions used
+      throughout the pipeline. This model is ephemeral — it creates no
+      physical object in the warehouse and exists purely to decouple the raw
+      source structure from downstream transformation logic.
+    columns:
+      - name: host_id
+        description: >
+          Unique identifier for the host, renamed from the source `id` field
+          to follow the project's naming convention.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: host_name
+        description: >
+          The host's display name as provided on the Airbnb platform.
+          May be null for some hosts; null values are replaced with
+          'Anonymous' in the cleansed dimension model.
+
+      - name: is_superhost
+        description: >
+          Indicates whether Airbnb has recognized this host with Superhost
+          status based on performance metrics such as response rate, review
+          scores, and number of completed stays. Raw values are 't' (yes)
+          or 'f' (no).
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['t', 'f']
+
+      - name: created_at
+        description: >
+          Timestamp when the host account was originally registered on the
+          Airbnb platform.
+        data_tests:
+          - not_null
+
+      - name: updated_at
+        description: >
+          Timestamp of the most recent update to the host's profile data
+          in the source system.
+        data_tests:
+          - not_null
+
+  - name: src_listings
+    description: >
+      Staging layer for raw listing data. Renames and selects fields from the
+      Airbnb source to standardize naming across the pipeline. This is an
+      ephemeral model with no physical warehouse representation — it exists
+      to isolate raw source field names from the rest of the project so that
+      source-side renames only require a single change here.
+    columns:
+      - name: listing_id
+        description: >
+          Unique identifier for the listing, renamed from the source `id`
+          field to follow the project's naming convention.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: listing_name
+        description: >
+          The title or display name of the property as shown to guests
+          searching on Airbnb.
+        data_tests:
+          - not_null
+
+      - name: listing_url
+        description: >
+          The public URL where guests can view and book this listing on the
+          Airbnb platform.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_match_regex:
+              arguments:
+                regex: "^https://www\\.airbnb\\.com/"
+
+      - name: room_type
+        description: >
+          The category of accommodation offered by the host. Drives how
+          listings appear in Airbnb search filters. Values include
+          'Entire home/apt', 'Private room', 'Shared room', and 'Hotel room'.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Entire home/apt', 'Private room', 'Shared room', 'Hotel room']
+
+      - name: minimum_nights
+        description: >
+          The minimum number of consecutive nights a guest must book, as
+          configured by the host. Values of 0 from the source are corrected
+          to 1 in the cleansed dimension model.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 365
+
+      - name: host_id
+        description: >
+          Foreign key to the host who owns this listing.
+        data_tests:
+          - not_null
+
+      - name: price_str
+        description: >
+          The nightly price as a raw string from the source system, including
+          the currency symbol (e.g. "$120.00"). This is converted to a clean
+          numeric value in dim_listings_cleansed.
+        data_tests:
+          - not_null
+
+      - name: created_at
+        description: >
+          Timestamp when the listing was first created on the Airbnb platform.
+        data_tests:
+          - not_null
+
+      - name: updated_at
+        description: >
+          Timestamp of the most recent change made to the listing's details
+          in the source system.
+        data_tests:
+          - not_null
+
+  - name: src_reviews
+    description: >
+      Staging layer for raw guest review data. Renames source fields to
+      consistent names used throughout the pipeline. Ephemeral model with no
+      physical warehouse representation — consumed directly by fct_reviews.
+      Renaming `comments` to `review_text` and `sentiment` to
+      `review_sentiment` here keeps the downstream models readable and
+      insulated from source field name changes.
+    columns:
+      - name: listing_id
+        description: >
+          Foreign key to the listing that received this review.
+        data_tests:
+          - not_null
+
+      - name: review_date
+        description: >
+          The date the guest submitted their review on the Airbnb platform.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: "'2008-01-01'::date"
+                max_value: "current_date"
+
+      - name: reviewer_name
+        description: >
+          The name of the guest who wrote the review, as it appears on their
+          Airbnb profile.
+        data_tests:
+          - not_null
+
+      - name: review_text
+        description: >
+          The full written content of the guest's review, sourced from the
+          `comments` field in the raw table. Reviews with null text are
+          excluded in fct_reviews.
+
+      - name: review_sentiment
+        description: >
+          Pre-computed sentiment classification of the review text, derived
+          upstream before loading into the warehouse. Values: 'positive',
+          'neutral', 'negative'.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['positive', 'neutral', 'negative']
+
+  # -----------------------------------------------------------------------
+  # DIMENSION LAYER — cleansed, business-ready attribute tables
+  # -----------------------------------------------------------------------
+
+  - name: dim_hosts_cleansed
+    description: >
+      Cleansed and business-ready dimension table for Airbnb hosts. Applies
+      data quality rules to the raw host data — most notably, replacing null
+      host names with 'Anonymous' so that every host always has a usable
+      display name in downstream reports. Use this model as the authoritative
+      source for host attributes in any analysis or dashboard.
+    tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table:
+          arguments:
+            compare_model: source('airbnb', 'hosts')
+    columns:
+
+      - name: host_id
+        description: >
+          Primary key. Unique identifier for each host on the Airbnb platform.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: host_name
+        description: >
+          The host's display name as it appears on the Airbnb platform. Null
+          values from the source have been replaced with 'Anonymous' to ensure
+          every record has a usable name in reports and dashboards.
+        meta:
+          pii: true
+          pii_type: name
+        data_tests:
+          - not_null
+
+      - name: is_superhost
+        description: >
+          Indicates whether Airbnb has granted this host Superhost status based
+          on performance metrics including response rate, review scores, and
+          number of completed stays. Superhost status is a strong proxy for
+          listing quality and guest satisfaction. 't' = Superhost,
+          'f' = standard host.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['t', 'f']
+
+      - name: created_at
+        description: >
+          Timestamp when the host account was originally registered on the
+          Airbnb platform. Useful for cohort analysis of host tenure.
+        data_tests:
+          - not_null
+
+      - name: updated_at
+        description: >
+          Timestamp of the most recent update to the host's profile data.
+          Can be used to detect recently active or recently changed hosts.
+        data_tests:
+          - not_null
+
   - name: dim_listings_cleansed
-    description: Cleansed table which contains Airbnb listings.
+    description: >
+      Cleansed and business-ready dimension table for Airbnb property listings.
+      Applies data quality transformations including stripping the currency
+      symbol from the raw price string to produce a numeric value, and
+      enforcing a minimum stay of at least one night. Use this model as the
+      authoritative source for listing attributes across all reports,
+      dashboards, and downstream joins.
+    tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table:
+          arguments:
+            compare_model: source('airbnb', 'listings')
     columns:
 
       - name: listing_id
-        description: Primary key for the listing
+        description: >
+          Primary key. Unique identifier for each listing on the Airbnb
+          platform.
         data_tests:
           - unique
           - not_null
 
-      - name: host_id
-        description: The host's id. References the host table.
+      - name: listing_name
+        description: >
+          The title or display name of the property as shown to guests
+          searching on Airbnb. Used in reports and dashboards where listings
+          need to be identified by a human-readable label.
         data_tests:
           - not_null
-          - relationships:
+          - dbt_expectations.expect_column_value_lengths_to_be_between:
               arguments:
-                to: ref('dim_hosts_cleansed')
-                field: host_id
+                min_value: 4
+                max_value: 500
 
       - name: room_type
-        description: Type of the apartment / room
+        description: >
+          The category of accommodation offered. Determines how the listing
+          appears in Airbnb search filters and is one of the most important
+          segmentation dimensions for pricing and occupancy analysis. Values:
+          'Entire home/apt', 'Private room', 'Shared room', 'Hotel room'.
         data_tests:
+          - not_null
           - accepted_values:
               arguments:
                 values: ['Entire home/apt', 'Private room', 'Shared room', 'Hotel room']
@@ -29,39 +296,117 @@ models:
       - name: minimum_nights
         description: '{{ doc("dim_listing_cleansed__minimum_nights") }}'
         data_tests:
+          - not_null
           - positive_values
-
-  - name: dim_hosts_cleansed
-    description: Cleansed table which contains Airbnb hosts.
-    columns:
-      - name: host_id
-        description: Primary key for the host
-        data_tests:
-          - not_null
-          - unique
-
-      - name: host_name
-        description: The host's name
-        data_tests:
-          - not_null
-
-      - name: is_superhost
-        description: Indicates if the host is a superhost
-
-        data_tests:
-          - accepted_values:
+          - dbt_expectations.expect_column_values_to_be_between:
               arguments:
-                values: ['t', 'f']
+                min_value: 1
+                max_value: 365
+
+      - name: host_id
+        description: >
+          Foreign key to dim_hosts_cleansed. Identifies the host responsible
+          for this listing and enables joins to host profile attributes such
+          as name and Superhost status.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_hosts_cleansed')
+                field: host_id
+
+      - name: price
+        description: >
+          The nightly price for this listing in USD, stored as a numeric value.
+          Derived by stripping the '$' currency symbol from the raw price
+          string. Use this field for all pricing analysis, revenue estimation,
+          and rate benchmarking.
+        data_tests:
+          - not_null
+          - positive_values
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              arguments:
+                column_type: number
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 10000
+          - dbt_expectations.expect_column_quantile_values_to_be_between:
+              arguments:
+                quantile: 0.50
+                min_value: 50
+                max_value: 500
+
+      - name: created_at
+        description: >
+          Timestamp when the listing was first created on the Airbnb platform.
+          Useful for understanding listing age and tracking new inventory.
+        data_tests:
+          - not_null
+
+      - name: updated_at
+        description: >
+          Timestamp of the most recent update to the listing's details in the
+          source system. Use to detect recently modified listings or to filter
+          for stale records.
+        data_tests:
+          - not_null
 
   - name: dim_listings_w_hosts
-    description: Listings with hosts combined
+    description: >
+      Denormalized view that joins listing details with host profile information
+      into a single, analytics-ready table. Eliminates the need for consumers
+      to join listings and hosts themselves, making this the primary model for
+      any analysis requiring both listing and host context — such as pricing
+      dashboards, host performance reports, and guest-facing search result
+      modeling. The updated_at timestamp reflects whichever was more recently
+      changed: the listing or the host profile.
     tests:
       - dbt_expectations.expect_table_row_count_to_equal_other_table:
           arguments:
             compare_model: source('airbnb','listings')
     columns:
+      - name: listing_id
+        description: >
+          Primary key. Unique identifier for the listing inherited from
+          dim_listings_cleansed.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: listing_name
+        description: >
+          The display name of the listing as shown to guests on the Airbnb
+          platform.
+        data_tests:
+          - not_null
+
+      - name: room_type
+        description: >
+          The category of accommodation (e.g., Entire home/apt, Private room).
+          Key dimension for search filtering, pricing segmentation, and
+          occupancy analysis.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Entire home/apt', 'Private room', 'Shared room', 'Hotel room']
+
+      - name: minimum_nights
+        description: >
+          The minimum number of consecutive nights a guest must book to reserve
+          this property.
+        data_tests:
+          - not_null
+          - positive_values
+
       - name: price
-        tests:
+        description: >
+          The nightly price in USD as a numeric value. Primary field for pricing
+          analysis, revenue reporting, and rate comparisons across listings.
+        data_tests:
+          - not_null
+          - positive_values
           - dbt_expectations.expect_column_values_to_be_of_type:
               arguments:
                 column_type: number
@@ -76,23 +421,209 @@ models:
                 config:
                   severity: warn
 
-  - name: fct_reviews
-    columns:
-      - name: listing_id
+      - name: host_id
+        description: >
+          Unique identifier for the host who owns this listing.
         data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_hosts_cleansed')
+                field: host_id
+
+      - name: host_name
+        description: >
+          The host's display name. Null values from the source have been
+          defaulted to 'Anonymous' to ensure every listing always has a
+          usable host name.
+        meta:
+          pii: true
+          pii_type: name
+        data_tests:
+          - not_null
+
+      - name: host_is_superhost
+        description: >
+          Indicates whether the host holds Airbnb Superhost status at the time
+          of the last profile update. 't' = Superhost, 'f' = standard host.
+          Useful for segmenting listings by host quality tier and analyzing
+          whether Superhost status correlates with pricing or occupancy.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['t', 'f']
+
+      - name: created_at
+        description: >
+          Timestamp when the listing was first created on the Airbnb platform.
+        data_tests:
+          - not_null
+
+      - name: updated_at
+        description: '{{ doc("dim_listings_w_hosts__updated_at") }}'
+        data_tests:
+          - not_null
+
+  # -----------------------------------------------------------------------
+  # FACT LAYER — event-grain transactional tables
+  # -----------------------------------------------------------------------
+
+  - name: fct_reviews
+    description: >
+      Fact table containing all guest reviews submitted for Airbnb listings.
+      Each row represents a single review. A surrogate key is generated from
+      the combination of listing, date, reviewer, and text to ensure
+      uniqueness. Reviews with null text are excluded — only reviews with
+      written content are included. The table loads incrementally, appending
+      only new reviews based on review date. Use this model as the foundation
+      for sentiment analysis, guest satisfaction tracking, and review volume
+      reporting.
+    columns:
+      - name: review_id
+        description: '{{ doc("fct_reviews__review_id") }}'
+        data_tests:
+          - not_null
+          - unique
+
+      - name: listing_id
+        description: >
+          Foreign key to dim_listings_cleansed. Identifies which listing
+          received this review and enables joins to listing and host attributes
+          for enriched reporting.
+        data_tests:
+          - not_null
           - relationships:
               arguments:
                 to: ref('dim_listings_cleansed')
                 field: listing_id
+
+      - name: review_date
+        description: >
+          The date the guest submitted their review on the Airbnb platform.
+          Drives the incremental load strategy — only reviews newer than the
+          current max review_date are appended on each run.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: "'2008-01-01'::date"
+                max_value: "current_date"
+
       - name: reviewer_name
+        description: >
+          The name of the guest who wrote the review, as it appears on their
+          Airbnb profile. Not anonymized — reflects the name as submitted.
+        meta:
+          pii: true
+          pii_type: name
         data_tests:
           - not_null
 
-      - name: review_sentiment
+      - name: review_text
+        description: >
+          The full written content of the guest's review. Null reviews are
+          filtered out upstream, so every row in this table has substantive
+          review text. Primary input for NLP, sentiment scoring, and keyword
+          analysis.
+        meta:
+          pii: true
+          pii_type: free_text
         data_tests:
+          - not_null
+          - dbt_expectations.expect_column_value_lengths_to_be_between:
+              arguments:
+                min_value: 10
+
+      - name: review_sentiment
+        description: >
+          Sentiment classification of the review text, derived in the source
+          pipeline before loading into the warehouse. Values: 'positive',
+          'neutral', 'negative'. Use as the primary KPI field for guest
+          satisfaction dashboards and trend analysis.
+        data_tests:
+          - not_null
           - accepted_values:
               arguments:
                 values: ['positive', 'neutral', 'negative']
 
+  # -----------------------------------------------------------------------
+  # MART LAYER — business-specific aggregations and enrichments
+  # -----------------------------------------------------------------------
 
+  - name: mart_fullmoon_reviews
+    description: >
+      Analytics table that enriches guest reviews with a flag indicating
+      whether each review was written the day after a full moon. Built to
+      support analysis of the hypothesis that guest mood — and therefore
+      review sentiment — may be influenced by lunar cycles. Each row
+      corresponds to one review from fct_reviews with an added is_full_moon
+      label derived by joining review_date to the seed_full_moon_dates seed
+      table with a one-day offset. Use this model for lunar sentiment
+      experiments and as a pattern for calendar-based review enrichments.
+    tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table:
+          arguments:
+            compare_model: ref('fct_reviews')
+    columns:
+      - name: review_id
+        description: >
+          Surrogate primary key inherited from fct_reviews. Uniquely identifies
+          each review.
+        data_tests:
+          - not_null
+          - unique
 
+      - name: listing_id
+        description: >
+          Foreign key to the listing that received this review.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_reviews')
+                field: listing_id
+
+      - name: review_date
+        description: >
+          The date the guest submitted the review. Used for the lunar calendar
+          join logic.
+        data_tests:
+          - not_null
+
+      - name: reviewer_name
+        description: >
+          The name of the guest who wrote the review.
+        meta:
+          pii: true
+          pii_type: name
+        data_tests:
+          - not_null
+
+      - name: review_text
+        description: >
+          The full written content of the guest's review.
+        meta:
+          pii: true
+          pii_type: free_text
+        data_tests:
+          - not_null
+
+      - name: review_sentiment
+        description: >
+          Sentiment classification of the review. Values: 'positive', 'neutral',
+          'negative'. The primary dimension for lunar sentiment analysis in
+          this model.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['positive', 'neutral', 'negative']
+
+      - name: is_full_moon
+        description: '{{ doc("mart_fullmoon_reviews__is_full_moon") }}'
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['full moon', 'not full moon']
