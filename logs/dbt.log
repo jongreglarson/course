@@ -1,0 +1,668 @@
+[0m12:02:04.682901 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002AC0EFAB8C0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002AC103D3C50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002AC103D39D0>]}
+
+
+============================== 12:02:04.691307 | bdb60ded-0873-4bfb-a785-af8dfcbc2946 ==============================
+[0m12:02:04.691307 [info ] [MainThread]: Running with dbt=1.11.7
+[0m12:02:04.692652 [debug] [MainThread]: running dbt with arguments {'version_check': 'True', 'no_print': 'None', 'static_parser': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'printer_width': '80', 'write_json': 'True', 'introspect': 'True', 'log_cache_events': 'False', 'empty': 'None', 'cache_selected_only': 'False', 'fail_fast': 'False', 'debug': 'False', 'log_format': 'default', 'partial_parse': 'True', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'profiles_dir': 'C:\\Users\\jongl\\.dbt', 'indirect_selection': 'eager', 'use_colors': 'True', 'invocation_command': 'dbt init --skip-profile-setup', 'use_experimental_parser': 'False', 'log_path': 'logs'}
+[0m12:02:04.850114 [info ] [MainThread]: Creating dbt configuration folder at C:\Users\jongl\.dbt
+[0m12:02:29.650920 [debug] [MainThread]: Starter project path: C:\Users\jongl\course\.venv\Lib\site-packages\dbt\include\starter_project
+[0m12:02:29.703575 [info ] [MainThread]: 
+Your new dbt project "airbnb" was created!
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m12:02:29.707072 [debug] [MainThread]: Command `dbt init` succeeded at 12:02:29.706745 after 25.28 seconds
+[0m12:02:29.708164 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002AC114CC640>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002AC114B1370>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002AC10277460>]}
+[0m12:02:29.709133 [debug] [MainThread]: Flushing usage events
+[0m12:02:29.938517 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m12:07:14.216535 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000174ECF5B8C0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000174EE38BC50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000174EE38B9D0>]}
+
+
+============================== 12:07:14.224554 | f224e404-ef72-4d0e-b3da-f2af89615bec ==============================
+[0m12:07:14.224554 [info ] [MainThread]: Running with dbt=1.11.7
+[0m12:07:14.226048 [debug] [MainThread]: running dbt with arguments {'version_check': 'True', 'no_print': 'None', 'static_parser': 'True', 'target_path': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'printer_width': '80', 'write_json': 'True', 'empty': 'None', 'log_cache_events': 'False', 'introspect': 'True', 'cache_selected_only': 'False', 'fail_fast': 'False', 'debug': 'False', 'log_format': 'default', 'profiles_dir': 'C:\\Users\\jongl\\course', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'partial_parse': 'True', 'use_colors': 'True', 'indirect_selection': 'eager', 'invocation_command': 'dbt debug', 'use_experimental_parser': 'False', 'log_path': 'logs'}
+[0m12:07:14.287868 [info ] [MainThread]: dbt version: 1.11.7
+[0m12:07:14.288900 [info ] [MainThread]: python version: 3.13.9
+[0m12:07:14.290053 [info ] [MainThread]: python path: C:\Users\jongl\course\.venv\Scripts\python.exe
+[0m12:07:14.291033 [info ] [MainThread]: os info: Windows-10-10.0.19045-SP0
+[0m12:07:15.328922 [debug] [MainThread]: Snowflake adapter: Setting snowflake.connector to ERROR (file logging only)
+[0m12:07:15.330269 [debug] [MainThread]: Snowflake adapter: Setting botocore to ERROR (file logging only)
+[0m12:07:15.331599 [debug] [MainThread]: Snowflake adapter: Setting boto3 to ERROR (file logging only)
+[0m12:07:15.597665 [info ] [MainThread]: Using profiles dir at C:\Users\jongl\course
+[0m12:07:15.599393 [info ] [MainThread]: Using profiles.yml file at C:\Users\jongl\course\profiles.yml
+[0m12:07:15.601054 [info ] [MainThread]: Using dbt_project.yml file at C:\Users\jongl\course\dbt_project.yml
+[0m12:07:15.604339 [info ] [MainThread]: adapter type: snowflake
+[0m12:07:15.605680 [info ] [MainThread]: adapter version: 1.11.3
+[0m12:07:15.607759 [info ] [MainThread]: Configuration:
+[0m12:07:15.609184 [info ] [MainThread]:   profiles.yml file [[32mOK found and valid[0m]
+[0m12:07:15.610338 [info ] [MainThread]:   dbt_project.yml file [[31mERROR not found[0m]
+[0m12:07:15.612840 [info ] [MainThread]: Required dependencies:
+[0m12:07:15.618058 [debug] [MainThread]: Executing "git --help"
+[0m12:07:15.710294 [debug] [MainThread]: STDOUT: "b"usage: git [-v | --version] [-h | --help] [-C <path>] [-c <name>=<value>]\n           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]\n           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--no-lazy-fetch]\n           [--no-optional-locks] [--no-advice] [--bare] [--git-dir=<path>]\n           [--work-tree=<path>] [--namespace=<name>] [--config-env=<name>=<envvar>]\n           <command> [<args>]\n\nThese are common Git commands used in various situations:\n\nstart a working area (see also: git help tutorial)\n   clone      Clone a repository into a new directory\n   init       Create an empty Git repository or reinitialize an existing one\n\nwork on the current change (see also: git help everyday)\n   add        Add file contents to the index\n   mv         Move or rename a file, a directory, or a symlink\n   restore    Restore working tree files\n   rm         Remove files from the working tree and from the index\n\nexamine the history and state (see also: git help revisions)\n   bisect     Use binary search to find the commit that introduced a bug\n   diff       Show changes between commits, commit and working tree, etc\n   grep       Print lines matching a pattern\n   log        Show commit logs\n   show       Show various types of objects\n   status     Show the working tree status\n\ngrow, mark and tweak your common history\n   backfill   Download missing objects in a partial clone\n   branch     List, create, or delete branches\n   commit     Record changes to the repository\n   merge      Join two or more development histories together\n   rebase     Reapply commits on top of another base tip\n   reset      Set `HEAD` or the index to a known state\n   switch     Switch branches\n   tag        Create, list, delete or verify tags\n\ncollaborate (see also: git help workflows)\n   fetch      Download objects and refs from another repository\n   pull       Fetch from and integrate with another repository or a local branch\n   push       Update remote refs along with associated objects\n\n'git help -a' and 'git help -g' list available subcommands and some\nconcept guides. See 'git help <command>' or 'git help <concept>'\nto read about a specific subcommand or concept.\nSee 'git help git' for an overview of the system.\n""
+[0m12:07:15.712360 [debug] [MainThread]: STDERR: "b''"
+[0m12:07:15.713694 [info ] [MainThread]:  - git [[32mOK found[0m]
+
+[0m12:07:15.716480 [info ] [MainThread]: Connection:
+[0m12:07:15.718200 [info ] [MainThread]:   account: ovxaawr-lz03173
+[0m12:07:15.720311 [info ] [MainThread]:   user: dbt
+[0m12:07:15.723645 [info ] [MainThread]:   database: AIRBNB
+[0m12:07:15.733751 [info ] [MainThread]:   warehouse: COMPUTE_WH
+[0m12:07:15.736414 [info ] [MainThread]:   role: TRANSFORM
+[0m12:07:15.740406 [info ] [MainThread]:   schema: DEV
+[0m12:07:15.743004 [info ] [MainThread]:   authenticator: None
+[0m12:07:15.744355 [info ] [MainThread]:   oauth_client_id: None
+[0m12:07:15.750785 [info ] [MainThread]:   query_tag: None
+[0m12:07:15.752325 [info ] [MainThread]:   client_session_keep_alive: False
+[0m12:07:15.753674 [info ] [MainThread]:   host: None
+[0m12:07:15.755499 [info ] [MainThread]:   port: None
+[0m12:07:15.757598 [info ] [MainThread]:   proxy_host: None
+[0m12:07:15.759352 [info ] [MainThread]:   proxy_port: None
+[0m12:07:15.761601 [info ] [MainThread]:   protocol: None
+[0m12:07:15.767978 [info ] [MainThread]:   connect_retries: 1
+[0m12:07:15.769405 [info ] [MainThread]:   connect_timeout: None
+[0m12:07:15.770782 [info ] [MainThread]:   retry_on_database_errors: False
+[0m12:07:15.772002 [info ] [MainThread]:   retry_all: False
+[0m12:07:15.776554 [info ] [MainThread]:   insecure_mode: False
+[0m12:07:15.785943 [info ] [MainThread]:   reuse_connections: True
+[0m12:07:15.788730 [info ] [MainThread]:   s3_stage_vpce_dns_name: None
+[0m12:07:15.790670 [info ] [MainThread]:   platform_detection_timeout_seconds: 0.0
+[0m12:07:15.802061 [info ] [MainThread]: Registered adapter: snowflake=1.11.3
+[0m12:07:16.436933 [debug] [MainThread]: Acquiring new snowflake connection 'debug'
+[0m12:07:16.609440 [debug] [MainThread]: Using snowflake connection "debug"
+[0m12:07:16.610043 [debug] [MainThread]: On debug: select 1 as id
+[0m12:07:16.610687 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m12:07:18.120777 [debug] [MainThread]: SQL status: SUCCESS 1 in 1.510 seconds
+[0m12:07:18.122345 [info ] [MainThread]:   Connection test: [[32mOK connection ok[0m]
+
+[0m12:07:18.123425 [info ] [MainThread]: [31m1 check failed:[0m
+[0m12:07:18.124500 [info ] [MainThread]: Project loading failed for the following reason:
+ project path <C:\Users\jongl\course\dbt_project.yml> not found
+
+[0m12:07:18.126670 [debug] [MainThread]: Command `dbt debug` failed at 12:07:18.126427 after 4.17 seconds
+[0m12:07:18.127284 [debug] [MainThread]: Connection 'debug' was left open.
+[0m12:07:18.127792 [debug] [MainThread]: On debug: Close
+[0m12:07:18.258197 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000174F06AAFD0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000174F0687AD0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000174F063F020>]}
+[0m12:07:18.258888 [debug] [MainThread]: Flushing usage events
+[0m12:07:18.535696 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m12:08:59.304060 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002D18292B8C0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002D183D5BC50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002D183D5B9D0>]}
+
+
+============================== 12:08:59.313408 | 03b59edc-f95c-4061-9e8f-f3115959f6f7 ==============================
+[0m12:08:59.313408 [info ] [MainThread]: Running with dbt=1.11.7
+[0m12:08:59.314769 [debug] [MainThread]: running dbt with arguments {'static_parser': 'True', 'no_print': 'None', 'version_check': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'printer_width': '80', 'write_json': 'True', 'introspect': 'True', 'log_cache_events': 'False', 'empty': 'None', 'cache_selected_only': 'False', 'fail_fast': 'False', 'debug': 'False', 'log_format': 'default', 'profiles_dir': 'C:\\Users\\jongl\\course', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'partial_parse': 'True', 'use_colors': 'True', 'invocation_command': 'dbt debug', 'indirect_selection': 'eager', 'use_experimental_parser': 'False', 'log_path': 'logs'}
+[0m12:08:59.367567 [info ] [MainThread]: dbt version: 1.11.7
+[0m12:08:59.368587 [info ] [MainThread]: python version: 3.13.9
+[0m12:08:59.369592 [info ] [MainThread]: python path: C:\Users\jongl\course\.venv\Scripts\python.exe
+[0m12:08:59.370511 [info ] [MainThread]: os info: Windows-10-10.0.19045-SP0
+[0m12:09:00.333144 [debug] [MainThread]: Snowflake adapter: Setting snowflake.connector to ERROR (file logging only)
+[0m12:09:00.333879 [debug] [MainThread]: Snowflake adapter: Setting botocore to ERROR (file logging only)
+[0m12:09:00.334633 [debug] [MainThread]: Snowflake adapter: Setting boto3 to ERROR (file logging only)
+[0m12:09:00.485717 [info ] [MainThread]: Using profiles dir at C:\Users\jongl\course
+[0m12:09:00.486663 [info ] [MainThread]: Using profiles.yml file at C:\Users\jongl\course\profiles.yml
+[0m12:09:00.487724 [info ] [MainThread]: Using dbt_project.yml file at C:\Users\jongl\course\dbt_project.yml
+[0m12:09:00.490293 [info ] [MainThread]: adapter type: snowflake
+[0m12:09:00.491346 [info ] [MainThread]: adapter version: 1.11.3
+[0m12:09:00.492574 [info ] [MainThread]: Configuration:
+[0m12:09:00.493906 [info ] [MainThread]:   profiles.yml file [[32mOK found and valid[0m]
+[0m12:09:00.495142 [info ] [MainThread]:   dbt_project.yml file [[31mERROR not found[0m]
+[0m12:09:00.496828 [info ] [MainThread]: Required dependencies:
+[0m12:09:00.498061 [debug] [MainThread]: Executing "git --help"
+[0m12:09:00.565031 [debug] [MainThread]: STDOUT: "b"usage: git [-v | --version] [-h | --help] [-C <path>] [-c <name>=<value>]\n           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]\n           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--no-lazy-fetch]\n           [--no-optional-locks] [--no-advice] [--bare] [--git-dir=<path>]\n           [--work-tree=<path>] [--namespace=<name>] [--config-env=<name>=<envvar>]\n           <command> [<args>]\n\nThese are common Git commands used in various situations:\n\nstart a working area (see also: git help tutorial)\n   clone      Clone a repository into a new directory\n   init       Create an empty Git repository or reinitialize an existing one\n\nwork on the current change (see also: git help everyday)\n   add        Add file contents to the index\n   mv         Move or rename a file, a directory, or a symlink\n   restore    Restore working tree files\n   rm         Remove files from the working tree and from the index\n\nexamine the history and state (see also: git help revisions)\n   bisect     Use binary search to find the commit that introduced a bug\n   diff       Show changes between commits, commit and working tree, etc\n   grep       Print lines matching a pattern\n   log        Show commit logs\n   show       Show various types of objects\n   status     Show the working tree status\n\ngrow, mark and tweak your common history\n   backfill   Download missing objects in a partial clone\n   branch     List, create, or delete branches\n   commit     Record changes to the repository\n   merge      Join two or more development histories together\n   rebase     Reapply commits on top of another base tip\n   reset      Set `HEAD` or the index to a known state\n   switch     Switch branches\n   tag        Create, list, delete or verify tags\n\ncollaborate (see also: git help workflows)\n   fetch      Download objects and refs from another repository\n   pull       Fetch from and integrate with another repository or a local branch\n   push       Update remote refs along with associated objects\n\n'git help -a' and 'git help -g' list available subcommands and some\nconcept guides. See 'git help <command>' or 'git help <concept>'\nto read about a specific subcommand or concept.\nSee 'git help git' for an overview of the system.\n""
+[0m12:09:00.566039 [debug] [MainThread]: STDERR: "b''"
+[0m12:09:00.567059 [info ] [MainThread]:  - git [[32mOK found[0m]
+
+[0m12:09:00.568292 [info ] [MainThread]: Connection:
+[0m12:09:00.569491 [info ] [MainThread]:   account: ovxaawr-lz03173
+[0m12:09:00.570450 [info ] [MainThread]:   user: dbt
+[0m12:09:00.571617 [info ] [MainThread]:   database: AIRBNB
+[0m12:09:00.573456 [info ] [MainThread]:   warehouse: COMPUTE_WH
+[0m12:09:00.575077 [info ] [MainThread]:   role: TRANSFORM
+[0m12:09:00.576581 [info ] [MainThread]:   schema: DEV
+[0m12:09:00.578197 [info ] [MainThread]:   authenticator: None
+[0m12:09:00.579455 [info ] [MainThread]:   oauth_client_id: None
+[0m12:09:00.580663 [info ] [MainThread]:   query_tag: None
+[0m12:09:00.581998 [info ] [MainThread]:   client_session_keep_alive: False
+[0m12:09:00.583057 [info ] [MainThread]:   host: None
+[0m12:09:00.584191 [info ] [MainThread]:   port: None
+[0m12:09:00.585171 [info ] [MainThread]:   proxy_host: None
+[0m12:09:00.586088 [info ] [MainThread]:   proxy_port: None
+[0m12:09:00.587056 [info ] [MainThread]:   protocol: None
+[0m12:09:00.591484 [info ] [MainThread]:   connect_retries: 1
+[0m12:09:00.593455 [info ] [MainThread]:   connect_timeout: None
+[0m12:09:00.594931 [info ] [MainThread]:   retry_on_database_errors: False
+[0m12:09:00.597049 [info ] [MainThread]:   retry_all: False
+[0m12:09:00.598363 [info ] [MainThread]:   insecure_mode: False
+[0m12:09:00.599643 [info ] [MainThread]:   reuse_connections: True
+[0m12:09:00.600671 [info ] [MainThread]:   s3_stage_vpce_dns_name: None
+[0m12:09:00.601763 [info ] [MainThread]:   platform_detection_timeout_seconds: 0.0
+[0m12:09:00.603153 [info ] [MainThread]: Registered adapter: snowflake=1.11.3
+[0m12:09:01.202441 [debug] [MainThread]: Acquiring new snowflake connection 'debug'
+[0m12:09:01.313523 [debug] [MainThread]: Using snowflake connection "debug"
+[0m12:09:01.314112 [debug] [MainThread]: On debug: select 1 as id
+[0m12:09:01.314539 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m12:09:02.167237 [debug] [MainThread]: SQL status: SUCCESS 1 in 0.853 seconds
+[0m12:09:02.168782 [info ] [MainThread]:   Connection test: [[32mOK connection ok[0m]
+
+[0m12:09:02.169660 [info ] [MainThread]: [31m1 check failed:[0m
+[0m12:09:02.170847 [info ] [MainThread]: Project loading failed for the following reason:
+ project path <C:\Users\jongl\course\dbt_project.yml> not found
+
+[0m12:09:02.173527 [debug] [MainThread]: Command `dbt debug` failed at 12:09:02.173271 after 3.13 seconds
+[0m12:09:02.174332 [debug] [MainThread]: Connection 'debug' was left open.
+[0m12:09:02.174835 [debug] [MainThread]: On debug: Close
+[0m12:09:02.267420 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002D18635E2C0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002D186037650>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002D185FEF240>]}
+[0m12:09:02.268131 [debug] [MainThread]: Flushing usage events
+[0m12:09:02.466165 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m12:09:28.816579 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000181B5E078C0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000181B7263C50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000181B72639D0>]}
+
+
+============================== 12:09:28.824388 | 69d1666c-e6b0-44c0-8eec-c81c6c58f198 ==============================
+[0m12:09:28.824388 [info ] [MainThread]: Running with dbt=1.11.7
+[0m12:09:28.825750 [debug] [MainThread]: running dbt with arguments {'version_check': 'True', 'no_print': 'None', 'static_parser': 'True', 'target_path': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'printer_width': '80', 'write_json': 'True', 'empty': 'None', 'log_cache_events': 'False', 'introspect': 'True', 'cache_selected_only': 'False', 'log_format': 'default', 'debug': 'False', 'fail_fast': 'False', 'partial_parse': 'True', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'profiles_dir': 'C:\\Users\\jongl\\course', 'invocation_command': 'dbt debug', 'use_colors': 'True', 'indirect_selection': 'eager', 'use_experimental_parser': 'False', 'log_path': 'C:\\Users\\jongl\\course\\logs'}
+[0m12:09:28.877231 [info ] [MainThread]: dbt version: 1.11.7
+[0m12:09:28.878329 [info ] [MainThread]: python version: 3.13.9
+[0m12:09:28.879345 [info ] [MainThread]: python path: C:\Users\jongl\course\.venv\Scripts\python.exe
+[0m12:09:28.880310 [info ] [MainThread]: os info: Windows-10-10.0.19045-SP0
+[0m12:09:29.829768 [debug] [MainThread]: Snowflake adapter: Setting snowflake.connector to ERROR (file logging only)
+[0m12:09:29.830472 [debug] [MainThread]: Snowflake adapter: Setting botocore to ERROR (file logging only)
+[0m12:09:29.830985 [debug] [MainThread]: Snowflake adapter: Setting boto3 to ERROR (file logging only)
+[0m12:09:29.979203 [info ] [MainThread]: Using profiles dir at C:\Users\jongl\course
+[0m12:09:29.980354 [info ] [MainThread]: Using profiles.yml file at C:\Users\jongl\course\profiles.yml
+[0m12:09:29.981417 [info ] [MainThread]: Using dbt_project.yml file at C:\Users\jongl\course\dbt_project.yml
+[0m12:09:29.983920 [info ] [MainThread]: adapter type: snowflake
+[0m12:09:29.984861 [info ] [MainThread]: adapter version: 1.11.3
+[0m12:09:30.239933 [info ] [MainThread]: Configuration:
+[0m12:09:30.240992 [info ] [MainThread]:   profiles.yml file [[32mOK found and valid[0m]
+[0m12:09:30.241929 [info ] [MainThread]:   dbt_project.yml file [[32mOK found and valid[0m]
+[0m12:09:30.242765 [info ] [MainThread]: Required dependencies:
+[0m12:09:30.243746 [debug] [MainThread]: Executing "git --help"
+[0m12:09:30.307251 [debug] [MainThread]: STDOUT: "b"usage: git [-v | --version] [-h | --help] [-C <path>] [-c <name>=<value>]\n           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]\n           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--no-lazy-fetch]\n           [--no-optional-locks] [--no-advice] [--bare] [--git-dir=<path>]\n           [--work-tree=<path>] [--namespace=<name>] [--config-env=<name>=<envvar>]\n           <command> [<args>]\n\nThese are common Git commands used in various situations:\n\nstart a working area (see also: git help tutorial)\n   clone      Clone a repository into a new directory\n   init       Create an empty Git repository or reinitialize an existing one\n\nwork on the current change (see also: git help everyday)\n   add        Add file contents to the index\n   mv         Move or rename a file, a directory, or a symlink\n   restore    Restore working tree files\n   rm         Remove files from the working tree and from the index\n\nexamine the history and state (see also: git help revisions)\n   bisect     Use binary search to find the commit that introduced a bug\n   diff       Show changes between commits, commit and working tree, etc\n   grep       Print lines matching a pattern\n   log        Show commit logs\n   show       Show various types of objects\n   status     Show the working tree status\n\ngrow, mark and tweak your common history\n   backfill   Download missing objects in a partial clone\n   branch     List, create, or delete branches\n   commit     Record changes to the repository\n   merge      Join two or more development histories together\n   rebase     Reapply commits on top of another base tip\n   reset      Set `HEAD` or the index to a known state\n   switch     Switch branches\n   tag        Create, list, delete or verify tags\n\ncollaborate (see also: git help workflows)\n   fetch      Download objects and refs from another repository\n   pull       Fetch from and integrate with another repository or a local branch\n   push       Update remote refs along with associated objects\n\n'git help -a' and 'git help -g' list available subcommands and some\nconcept guides. See 'git help <command>' or 'git help <concept>'\nto read about a specific subcommand or concept.\nSee 'git help git' for an overview of the system.\n""
+[0m12:09:30.307982 [debug] [MainThread]: STDERR: "b''"
+[0m12:09:30.308553 [info ] [MainThread]:  - git [[32mOK found[0m]
+
+[0m12:09:30.309294 [info ] [MainThread]: Connection:
+[0m12:09:30.310342 [info ] [MainThread]:   account: ovxaawr-lz03173
+[0m12:09:30.311267 [info ] [MainThread]:   user: dbt
+[0m12:09:30.312132 [info ] [MainThread]:   database: AIRBNB
+[0m12:09:30.313090 [info ] [MainThread]:   warehouse: COMPUTE_WH
+[0m12:09:30.313894 [info ] [MainThread]:   role: TRANSFORM
+[0m12:09:30.315210 [info ] [MainThread]:   schema: DEV
+[0m12:09:30.316192 [info ] [MainThread]:   authenticator: None
+[0m12:09:30.317129 [info ] [MainThread]:   oauth_client_id: None
+[0m12:09:30.318022 [info ] [MainThread]:   query_tag: None
+[0m12:09:30.319239 [info ] [MainThread]:   client_session_keep_alive: False
+[0m12:09:30.320702 [info ] [MainThread]:   host: None
+[0m12:09:30.323772 [info ] [MainThread]:   port: None
+[0m12:09:30.324659 [info ] [MainThread]:   proxy_host: None
+[0m12:09:30.325650 [info ] [MainThread]:   proxy_port: None
+[0m12:09:30.326567 [info ] [MainThread]:   protocol: None
+[0m12:09:30.327425 [info ] [MainThread]:   connect_retries: 1
+[0m12:09:30.328261 [info ] [MainThread]:   connect_timeout: None
+[0m12:09:30.329538 [info ] [MainThread]:   retry_on_database_errors: False
+[0m12:09:30.330465 [info ] [MainThread]:   retry_all: False
+[0m12:09:30.331389 [info ] [MainThread]:   insecure_mode: False
+[0m12:09:30.332372 [info ] [MainThread]:   reuse_connections: True
+[0m12:09:30.333374 [info ] [MainThread]:   s3_stage_vpce_dns_name: None
+[0m12:09:30.334297 [info ] [MainThread]:   platform_detection_timeout_seconds: 0.0
+[0m12:09:30.336553 [info ] [MainThread]: Registered adapter: snowflake=1.11.3
+[0m12:09:30.916571 [debug] [MainThread]: Acquiring new snowflake connection 'debug'
+[0m12:09:31.028200 [debug] [MainThread]: Using snowflake connection "debug"
+[0m12:09:31.028779 [debug] [MainThread]: On debug: select 1 as id
+[0m12:09:31.029253 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m12:09:31.866196 [debug] [MainThread]: SQL status: SUCCESS 1 in 0.837 seconds
+[0m12:09:31.867835 [info ] [MainThread]:   Connection test: [[32mOK connection ok[0m]
+
+[0m12:09:31.868953 [info ] [MainThread]: [32mAll checks passed![0m
+[0m12:09:31.871115 [debug] [MainThread]: Command `dbt debug` succeeded at 12:09:31.870871 after 3.32 seconds
+[0m12:09:31.871667 [debug] [MainThread]: Connection 'debug' was left open.
+[0m12:09:31.872128 [debug] [MainThread]: On debug: Close
+[0m12:09:31.972355 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000181B96569E0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000181B964F0B0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000181B6B3E250>]}
+[0m12:09:31.973073 [debug] [MainThread]: Flushing usage events
+[0m12:09:32.092871 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m13:28:25.510086 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001ED897FB8C0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001ED8AC4BC50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001ED8AC4B9D0>]}
+
+
+============================== 13:28:25.521019 | fba6202c-61e2-4a10-9b67-b6c384fbbfdc ==============================
+[0m13:28:25.521019 [info ] [MainThread]: Running with dbt=1.11.7
+[0m13:28:25.522445 [debug] [MainThread]: running dbt with arguments {'version_check': 'True', 'no_print': 'None', 'static_parser': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'printer_width': '80', 'write_json': 'True', 'empty': 'False', 'log_cache_events': 'False', 'introspect': 'True', 'cache_selected_only': 'False', 'fail_fast': 'False', 'debug': 'False', 'log_format': 'default', 'partial_parse': 'True', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'profiles_dir': 'C:\\Users\\jongl\\course', 'invocation_command': 'dbt run', 'use_colors': 'True', 'indirect_selection': 'eager', 'use_experimental_parser': 'False', 'log_path': 'C:\\Users\\jongl\\course\\logs'}
+[0m13:28:26.749003 [debug] [MainThread]: Snowflake adapter: Setting snowflake.connector to ERROR (file logging only)
+[0m13:28:26.750128 [debug] [MainThread]: Snowflake adapter: Setting botocore to ERROR (file logging only)
+[0m13:28:26.750677 [debug] [MainThread]: Snowflake adapter: Setting boto3 to ERROR (file logging only)
+[0m13:28:26.969962 [warn ] [MainThread]: [[33mWARNING[0m][MissingPlusPrefixDeprecation]: Deprecated functionality
+Missing '+' prefix on `airbnb` found at `airbnb` in file
+`C:\Users\jongl\course\dbt_project.yml`. Hierarchical config values without a
+'+' prefix are deprecated in dbt_project.yml.
+[0m13:28:26.971017 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'deprecation', 'label': 'fba6202c-61e2-4a10-9b67-b6c384fbbfdc', 'property_': 'warn', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001ED8CE3ED70>]}
+[0m13:28:27.447075 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'fba6202c-61e2-4a10-9b67-b6c384fbbfdc', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001ED8AAD5D00>]}
+[0m13:28:27.643925 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': 'fba6202c-61e2-4a10-9b67-b6c384fbbfdc', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001ED8AC40050>]}
+[0m13:28:27.648484 [info ] [MainThread]: Registered adapter: snowflake=1.11.3
+[0m13:28:28.739339 [debug] [MainThread]: checksum: b80718358155fc17c3559352095564dd56ada1cc1a1c0ef2e62c857e71583775, vars: {}, profile: , target: , version: 1.11.7
+[0m13:28:28.741490 [info ] [MainThread]: Unable to do partial parsing because saved manifest not found. Starting full parse.
+[0m13:28:28.742804 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'partial_parser', 'label': 'fba6202c-61e2-4a10-9b67-b6c384fbbfdc', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001ED8CDB2300>]}
+[0m13:28:32.648134 [warn ] [MainThread]: [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models
+[0m13:28:32.657302 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': 'fba6202c-61e2-4a10-9b67-b6c384fbbfdc', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001ED8D235FD0>]}
+[0m13:28:32.781682 [debug] [MainThread]: Wrote artifact WritableManifest to C:\Users\jongl\course\target\manifest.json
+[0m13:28:32.788776 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\Users\jongl\course\target\semantic_manifest.json
+[0m13:28:33.058956 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': 'fba6202c-61e2-4a10-9b67-b6c384fbbfdc', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001ED8CE15BF0>]}
+[0m13:28:33.060271 [info ] [MainThread]: Found 522 macros
+[0m13:28:33.080779 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'fba6202c-61e2-4a10-9b67-b6c384fbbfdc', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001ED8D378E90>]}
+[0m13:28:33.093508 [warn ] [MainThread]: Nothing to do. Try checking your model configs and model specification args
+[0m13:28:33.096635 [debug] [MainThread]: Command end result
+[0m13:28:33.189015 [debug] [MainThread]: Wrote artifact WritableManifest to C:\Users\jongl\course\target\manifest.json
+[0m13:28:33.193078 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\Users\jongl\course\target\semantic_manifest.json
+[0m13:28:33.202577 [debug] [MainThread]: Wrote artifact RunExecutionResult to C:\Users\jongl\course\target\run_results.json
+[0m13:28:33.203962 [warn ] [MainThread]: [[33mWARNING[0m][DeprecationsSummary]: Deprecated functionality
+Summary of encountered deprecations:
+- MissingPlusPrefixDeprecation: 1 occurrence
+To see all deprecation instances instead of just the first occurrence of each,
+run command again with the `--show-all-deprecations` flag. You may also need to
+run with `--no-partial-parse` as some deprecations are only encountered during
+parsing.
+[0m13:28:33.206361 [debug] [MainThread]: Command `dbt run` succeeded at 13:28:33.206089 after 8.03 seconds
+[0m13:28:33.207069 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001ED8D3362B0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001ED8D3D5F90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001ED8D3D60D0>]}
+[0m13:28:33.207656 [debug] [MainThread]: Flushing usage events
+[0m13:28:33.422034 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m13:30:19.242617 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018D05E7B8C0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018D0827FC50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018D0827F9D0>]}
+
+
+============================== 13:30:19.250341 | 3fff8154-cdd5-4c53-9e69-6cbb3eaf63dd ==============================
+[0m13:30:19.250341 [info ] [MainThread]: Running with dbt=1.11.7
+[0m13:30:19.251671 [debug] [MainThread]: running dbt with arguments {'version_check': 'True', 'no_print': 'None', 'static_parser': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'printer_width': '80', 'write_json': 'True', 'introspect': 'True', 'log_cache_events': 'False', 'empty': 'False', 'cache_selected_only': 'False', 'log_format': 'default', 'debug': 'False', 'fail_fast': 'False', 'profiles_dir': 'C:\\Users\\jongl\\course', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'partial_parse': 'True', 'invocation_command': 'dbt run', 'use_colors': 'True', 'indirect_selection': 'eager', 'use_experimental_parser': 'False', 'log_path': 'C:\\Users\\jongl\\course\\logs'}
+[0m13:30:20.196170 [debug] [MainThread]: Snowflake adapter: Setting snowflake.connector to ERROR (file logging only)
+[0m13:30:20.197030 [debug] [MainThread]: Snowflake adapter: Setting botocore to ERROR (file logging only)
+[0m13:30:20.197601 [debug] [MainThread]: Snowflake adapter: Setting boto3 to ERROR (file logging only)
+[0m13:30:20.352598 [warn ] [MainThread]: [[33mWARNING[0m][MissingPlusPrefixDeprecation]: Deprecated functionality
+Missing '+' prefix on `airbnb` found at `airbnb` in file
+`C:\Users\jongl\course\dbt_project.yml`. Hierarchical config values without a
+'+' prefix are deprecated in dbt_project.yml.
+[0m13:30:20.353731 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'deprecation', 'label': '3fff8154-cdd5-4c53-9e69-6cbb3eaf63dd', 'property_': 'warn', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018D094B2D70>]}
+[0m13:30:20.692311 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '3fff8154-cdd5-4c53-9e69-6cbb3eaf63dd', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018D07145D00>]}
+[0m13:30:20.855337 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '3fff8154-cdd5-4c53-9e69-6cbb3eaf63dd', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018D08280050>]}
+[0m13:30:20.857932 [info ] [MainThread]: Registered adapter: snowflake=1.11.3
+[0m13:30:21.445333 [debug] [MainThread]: checksum: b80718358155fc17c3559352095564dd56ada1cc1a1c0ef2e62c857e71583775, vars: {}, profile: , target: , version: 1.11.7
+[0m13:30:21.632380 [debug] [MainThread]: Partial parsing enabled: 0 files deleted, 0 files added, 0 files changed.
+[0m13:30:21.632972 [debug] [MainThread]: Nothing changed, skipping partial parsing.
+[0m13:30:21.633544 [debug] [MainThread]: Partial parsing enabled, no changes found, skipping parsing
+[0m13:30:21.634357 [warn ] [MainThread]: [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models
+[0m13:30:21.646246 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': '3fff8154-cdd5-4c53-9e69-6cbb3eaf63dd', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018D0991D6D0>]}
+[0m13:30:21.735359 [debug] [MainThread]: Wrote artifact WritableManifest to C:\Users\jongl\course\target\manifest.json
+[0m13:30:21.741413 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\Users\jongl\course\target\semantic_manifest.json
+[0m13:30:21.800721 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': '3fff8154-cdd5-4c53-9e69-6cbb3eaf63dd', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018D098C2510>]}
+[0m13:30:21.801482 [info ] [MainThread]: Found 522 macros
+[0m13:30:21.802416 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '3fff8154-cdd5-4c53-9e69-6cbb3eaf63dd', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018D099FFC70>]}
+[0m13:30:21.805737 [warn ] [MainThread]: Nothing to do. Try checking your model configs and model specification args
+[0m13:30:21.809891 [debug] [MainThread]: Command end result
+[0m13:30:21.853842 [debug] [MainThread]: Wrote artifact WritableManifest to C:\Users\jongl\course\target\manifest.json
+[0m13:30:21.859304 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\Users\jongl\course\target\semantic_manifest.json
+[0m13:30:21.865102 [debug] [MainThread]: Wrote artifact RunExecutionResult to C:\Users\jongl\course\target\run_results.json
+[0m13:30:21.866123 [warn ] [MainThread]: [[33mWARNING[0m][DeprecationsSummary]: Deprecated functionality
+Summary of encountered deprecations:
+- MissingPlusPrefixDeprecation: 1 occurrence
+To see all deprecation instances instead of just the first occurrence of each,
+run command again with the `--show-all-deprecations` flag. You may also need to
+run with `--no-partial-parse` as some deprecations are only encountered during
+parsing.
+[0m13:30:21.869771 [debug] [MainThread]: Command `dbt run` succeeded at 13:30:21.869471 after 2.89 seconds
+[0m13:30:21.870384 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018D08295910>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018D09957540>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018D09957750>]}
+[0m13:30:21.871751 [debug] [MainThread]: Flushing usage events
+[0m13:30:22.099959 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m13:31:52.383739 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000015DF40C78C0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000015DF5517C50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000015DF55179D0>]}
+
+
+============================== 13:31:52.391730 | 41bc78ea-7e3b-47c4-b9ca-a2ce255fd483 ==============================
+[0m13:31:52.391730 [info ] [MainThread]: Running with dbt=1.11.7
+[0m13:31:52.393018 [debug] [MainThread]: running dbt with arguments {'static_parser': 'True', 'no_print': 'None', 'version_check': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'printer_width': '80', 'write_json': 'True', 'empty': 'False', 'log_cache_events': 'False', 'introspect': 'True', 'cache_selected_only': 'False', 'fail_fast': 'False', 'debug': 'False', 'log_format': 'default', 'partial_parse': 'True', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'profiles_dir': 'C:\\Users\\jongl\\course', 'use_colors': 'True', 'invocation_command': 'dbt run', 'indirect_selection': 'eager', 'use_experimental_parser': 'False', 'log_path': 'C:\\Users\\jongl\\course\\logs'}
+[0m13:31:53.339653 [debug] [MainThread]: Snowflake adapter: Setting snowflake.connector to ERROR (file logging only)
+[0m13:31:53.340366 [debug] [MainThread]: Snowflake adapter: Setting botocore to ERROR (file logging only)
+[0m13:31:53.340942 [debug] [MainThread]: Snowflake adapter: Setting boto3 to ERROR (file logging only)
+[0m13:31:53.502276 [warn ] [MainThread]: [[33mWARNING[0m][MissingPlusPrefixDeprecation]: Deprecated functionality
+Missing '+' prefix on `airbnb` found at `airbnb` in file
+`C:\Users\jongl\course\dbt_project.yml`. Hierarchical config values without a
+'+' prefix are deprecated in dbt_project.yml.
+[0m13:31:53.503350 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'deprecation', 'label': '41bc78ea-7e3b-47c4-b9ca-a2ce255fd483', 'property_': 'warn', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000015DF7712D70>]}
+[0m13:31:53.838236 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '41bc78ea-7e3b-47c4-b9ca-a2ce255fd483', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000015DF53A5D00>]}
+[0m13:31:54.003101 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '41bc78ea-7e3b-47c4-b9ca-a2ce255fd483', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000015DF5510050>]}
+[0m13:31:54.005264 [info ] [MainThread]: Registered adapter: snowflake=1.11.3
+[0m13:31:54.753370 [debug] [MainThread]: checksum: b80718358155fc17c3559352095564dd56ada1cc1a1c0ef2e62c857e71583775, vars: {}, profile: , target: , version: 1.11.7
+[0m13:31:54.916735 [debug] [MainThread]: Partial parsing enabled: 0 files deleted, 0 files added, 0 files changed.
+[0m13:31:54.917765 [debug] [MainThread]: Nothing changed, skipping partial parsing.
+[0m13:31:54.918340 [debug] [MainThread]: Partial parsing enabled, no changes found, skipping parsing
+[0m13:31:54.919169 [warn ] [MainThread]: [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models
+[0m13:31:54.928379 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': '41bc78ea-7e3b-47c4-b9ca-a2ce255fd483', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000015DF7B7D6D0>]}
+[0m13:31:55.024273 [debug] [MainThread]: Wrote artifact WritableManifest to C:\Users\jongl\course\target\manifest.json
+[0m13:31:55.028447 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\Users\jongl\course\target\semantic_manifest.json
+[0m13:31:55.087611 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': '41bc78ea-7e3b-47c4-b9ca-a2ce255fd483', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000015DF7B22510>]}
+[0m13:31:55.088517 [info ] [MainThread]: Found 522 macros
+[0m13:31:55.089487 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '41bc78ea-7e3b-47c4-b9ca-a2ce255fd483', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000015DF7C5FC70>]}
+[0m13:31:55.091879 [warn ] [MainThread]: Nothing to do. Try checking your model configs and model specification args
+[0m13:31:55.095482 [debug] [MainThread]: Command end result
+[0m13:31:55.139116 [debug] [MainThread]: Wrote artifact WritableManifest to C:\Users\jongl\course\target\manifest.json
+[0m13:31:55.143195 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\Users\jongl\course\target\semantic_manifest.json
+[0m13:31:55.149520 [debug] [MainThread]: Wrote artifact RunExecutionResult to C:\Users\jongl\course\target\run_results.json
+[0m13:31:55.151125 [warn ] [MainThread]: [[33mWARNING[0m][DeprecationsSummary]: Deprecated functionality
+Summary of encountered deprecations:
+- MissingPlusPrefixDeprecation: 1 occurrence
+To see all deprecation instances instead of just the first occurrence of each,
+run command again with the `--show-all-deprecations` flag. You may also need to
+run with `--no-partial-parse` as some deprecations are only encountered during
+parsing.
+[0m13:31:55.153780 [debug] [MainThread]: Command `dbt run` succeeded at 13:31:55.153519 after 3.03 seconds
+[0m13:31:55.154507 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000015DF55219D0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000015DF7BB7540>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000015DF7BB7750>]}
+[0m13:31:55.155205 [debug] [MainThread]: Flushing usage events
+[0m13:31:55.382722 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m13:35:35.071693 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002949E8EB8C0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002949FD2FC50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002949FD2F9D0>]}
+
+
+============================== 13:35:35.082256 | 66730927-3380-476b-a3d9-64578a90c011 ==============================
+[0m13:35:35.082256 [info ] [MainThread]: Running with dbt=1.11.7
+[0m13:35:35.085317 [debug] [MainThread]: running dbt with arguments {'static_parser': 'True', 'no_print': 'None', 'version_check': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'printer_width': '80', 'write_json': 'True', 'introspect': 'True', 'log_cache_events': 'False', 'empty': 'None', 'cache_selected_only': 'False', 'log_format': 'default', 'debug': 'False', 'fail_fast': 'False', 'profiles_dir': 'C:\\Users\\jongl\\course', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'partial_parse': 'True', 'use_colors': 'True', 'indirect_selection': 'eager', 'invocation_command': 'dbt ls', 'use_experimental_parser': 'False', 'log_path': 'C:\\Users\\jongl\\course\\logs'}
+[0m13:35:36.922653 [debug] [MainThread]: Snowflake adapter: Setting snowflake.connector to ERROR (file logging only)
+[0m13:35:36.924157 [debug] [MainThread]: Snowflake adapter: Setting botocore to ERROR (file logging only)
+[0m13:35:36.925549 [debug] [MainThread]: Snowflake adapter: Setting boto3 to ERROR (file logging only)
+[0m13:35:37.316218 [warn ] [MainThread]: [[33mWARNING[0m][MissingPlusPrefixDeprecation]: Deprecated functionality
+Missing '+' prefix on `airbnb` found at `airbnb` in file
+`C:\Users\jongl\course\dbt_project.yml`. Hierarchical config values without a
+'+' prefix are deprecated in dbt_project.yml.
+[0m13:35:37.318002 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'deprecation', 'label': '66730927-3380-476b-a3d9-64578a90c011', 'property_': 'warn', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000294A1F92D70>]}
+[0m13:35:38.145730 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '66730927-3380-476b-a3d9-64578a90c011', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002949FBC5D00>]}
+[0m13:35:38.565237 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '66730927-3380-476b-a3d9-64578a90c011', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002949FD30050>]}
+[0m13:35:38.568729 [info ] [MainThread]: Registered adapter: snowflake=1.11.3
+[0m13:35:39.926099 [debug] [MainThread]: checksum: b80718358155fc17c3559352095564dd56ada1cc1a1c0ef2e62c857e71583775, vars: {}, profile: , target: , version: 1.11.7
+[0m13:35:40.354914 [debug] [MainThread]: Partial parsing enabled: 0 files deleted, 0 files added, 0 files changed.
+[0m13:35:40.356114 [debug] [MainThread]: Nothing changed, skipping partial parsing.
+[0m13:35:40.357151 [debug] [MainThread]: Partial parsing enabled, no changes found, skipping parsing
+[0m13:35:40.359175 [warn ] [MainThread]: [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models
+[0m13:35:40.390033 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': '66730927-3380-476b-a3d9-64578a90c011', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000294A23FD6D0>]}
+[0m13:35:40.593418 [debug] [MainThread]: Wrote artifact WritableManifest to C:\Users\jongl\course\target\manifest.json
+[0m13:35:40.602643 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\Users\jongl\course\target\semantic_manifest.json
+[0m13:35:40.755433 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': '66730927-3380-476b-a3d9-64578a90c011', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000294A1FBB150>]}
+[0m13:35:40.757929 [info ] [MainThread]: Found 522 macros
+[0m13:35:40.759666 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '66730927-3380-476b-a3d9-64578a90c011', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000294A1F58E20>]}
+[0m13:35:40.762194 [warn ] [MainThread]: No nodes selected!
+[0m13:35:40.768532 [warn ] [MainThread]: [[33mWARNING[0m][DeprecationsSummary]: Deprecated functionality
+Summary of encountered deprecations:
+- MissingPlusPrefixDeprecation: 1 occurrence
+To see all deprecation instances instead of just the first occurrence of each,
+run command again with the `--show-all-deprecations` flag. You may also need to
+run with `--no-partial-parse` as some deprecations are only encountered during
+parsing.
+[0m13:35:40.779082 [debug] [MainThread]: Command `dbt ls` succeeded at 13:35:40.778684 after 6.17 seconds
+[0m13:35:40.780317 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002949FD45910>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000294A2437330>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000294A24373E0>]}
+[0m13:35:40.781848 [debug] [MainThread]: Flushing usage events
+[0m13:35:41.029732 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m13:36:26.588384 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001C5F048B8C0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001C5F18D3C50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001C5F18D39D0>]}
+
+
+============================== 13:36:26.596455 | f243573e-730b-4a99-93d6-7239881d1edb ==============================
+[0m13:36:26.596455 [info ] [MainThread]: Running with dbt=1.11.7
+[0m13:36:26.597875 [debug] [MainThread]: running dbt with arguments {'version_check': 'True', 'no_print': 'None', 'static_parser': 'True', 'target_path': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'printer_width': '80', 'write_json': 'True', 'empty': 'None', 'log_cache_events': 'False', 'introspect': 'True', 'cache_selected_only': 'False', 'log_format': 'default', 'debug': 'False', 'fail_fast': 'False', 'partial_parse': 'True', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'profiles_dir': 'C:\\Users\\jongl\\course', 'indirect_selection': 'eager', 'invocation_command': 'dbt debug', 'use_colors': 'True', 'use_experimental_parser': 'False', 'log_path': 'C:\\Users\\jongl\\course\\logs'}
+[0m13:36:26.645992 [info ] [MainThread]: dbt version: 1.11.7
+[0m13:36:26.646996 [info ] [MainThread]: python version: 3.13.9
+[0m13:36:26.648235 [info ] [MainThread]: python path: C:\Users\jongl\course\.venv\Scripts\python.exe
+[0m13:36:26.649361 [info ] [MainThread]: os info: Windows-10-10.0.19045-SP0
+[0m13:36:27.693136 [debug] [MainThread]: Snowflake adapter: Setting snowflake.connector to ERROR (file logging only)
+[0m13:36:27.693871 [debug] [MainThread]: Snowflake adapter: Setting botocore to ERROR (file logging only)
+[0m13:36:27.694394 [debug] [MainThread]: Snowflake adapter: Setting boto3 to ERROR (file logging only)
+[0m13:36:27.846270 [info ] [MainThread]: Using profiles dir at C:\Users\jongl\course
+[0m13:36:27.847672 [info ] [MainThread]: Using profiles.yml file at C:\Users\jongl\course\profiles.yml
+[0m13:36:27.848815 [info ] [MainThread]: Using dbt_project.yml file at C:\Users\jongl\course\dbt_project.yml
+[0m13:36:27.851542 [info ] [MainThread]: adapter type: snowflake
+[0m13:36:27.853072 [info ] [MainThread]: adapter version: 1.11.3
+[0m13:36:28.104233 [info ] [MainThread]: Configuration:
+[0m13:36:28.105445 [info ] [MainThread]:   profiles.yml file [[32mOK found and valid[0m]
+[0m13:36:28.106529 [info ] [MainThread]:   dbt_project.yml file [[32mOK found and valid[0m]
+[0m13:36:28.107562 [info ] [MainThread]: Required dependencies:
+[0m13:36:28.108598 [debug] [MainThread]: Executing "git --help"
+[0m13:36:28.177327 [debug] [MainThread]: STDOUT: "b"usage: git [-v | --version] [-h | --help] [-C <path>] [-c <name>=<value>]\n           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]\n           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--no-lazy-fetch]\n           [--no-optional-locks] [--no-advice] [--bare] [--git-dir=<path>]\n           [--work-tree=<path>] [--namespace=<name>] [--config-env=<name>=<envvar>]\n           <command> [<args>]\n\nThese are common Git commands used in various situations:\n\nstart a working area (see also: git help tutorial)\n   clone      Clone a repository into a new directory\n   init       Create an empty Git repository or reinitialize an existing one\n\nwork on the current change (see also: git help everyday)\n   add        Add file contents to the index\n   mv         Move or rename a file, a directory, or a symlink\n   restore    Restore working tree files\n   rm         Remove files from the working tree and from the index\n\nexamine the history and state (see also: git help revisions)\n   bisect     Use binary search to find the commit that introduced a bug\n   diff       Show changes between commits, commit and working tree, etc\n   grep       Print lines matching a pattern\n   log        Show commit logs\n   show       Show various types of objects\n   status     Show the working tree status\n\ngrow, mark and tweak your common history\n   backfill   Download missing objects in a partial clone\n   branch     List, create, or delete branches\n   commit     Record changes to the repository\n   merge      Join two or more development histories together\n   rebase     Reapply commits on top of another base tip\n   reset      Set `HEAD` or the index to a known state\n   switch     Switch branches\n   tag        Create, list, delete or verify tags\n\ncollaborate (see also: git help workflows)\n   fetch      Download objects and refs from another repository\n   pull       Fetch from and integrate with another repository or a local branch\n   push       Update remote refs along with associated objects\n\n'git help -a' and 'git help -g' list available subcommands and some\nconcept guides. See 'git help <command>' or 'git help <concept>'\nto read about a specific subcommand or concept.\nSee 'git help git' for an overview of the system.\n""
+[0m13:36:28.178588 [debug] [MainThread]: STDERR: "b''"
+[0m13:36:28.179757 [info ] [MainThread]:  - git [[32mOK found[0m]
+
+[0m13:36:28.180918 [info ] [MainThread]: Connection:
+[0m13:36:28.182040 [info ] [MainThread]:   account: ovxaawr-lz03173
+[0m13:36:28.183011 [info ] [MainThread]:   user: dbt
+[0m13:36:28.184177 [info ] [MainThread]:   database: AIRBNB
+[0m13:36:28.185208 [info ] [MainThread]:   warehouse: COMPUTE_WH
+[0m13:36:28.186208 [info ] [MainThread]:   role: TRANSFORM
+[0m13:36:28.187607 [info ] [MainThread]:   schema: DEV
+[0m13:36:28.188629 [info ] [MainThread]:   authenticator: None
+[0m13:36:28.190303 [info ] [MainThread]:   oauth_client_id: None
+[0m13:36:28.191806 [info ] [MainThread]:   query_tag: None
+[0m13:36:28.193335 [info ] [MainThread]:   client_session_keep_alive: False
+[0m13:36:28.194816 [info ] [MainThread]:   host: None
+[0m13:36:28.196776 [info ] [MainThread]:   port: None
+[0m13:36:28.198867 [info ] [MainThread]:   proxy_host: None
+[0m13:36:28.200903 [info ] [MainThread]:   proxy_port: None
+[0m13:36:28.202127 [info ] [MainThread]:   protocol: None
+[0m13:36:28.203410 [info ] [MainThread]:   connect_retries: 1
+[0m13:36:28.204629 [info ] [MainThread]:   connect_timeout: None
+[0m13:36:28.206459 [info ] [MainThread]:   retry_on_database_errors: False
+[0m13:36:28.207815 [info ] [MainThread]:   retry_all: False
+[0m13:36:28.209060 [info ] [MainThread]:   insecure_mode: False
+[0m13:36:28.210256 [info ] [MainThread]:   reuse_connections: True
+[0m13:36:28.211639 [info ] [MainThread]:   s3_stage_vpce_dns_name: None
+[0m13:36:28.215195 [info ] [MainThread]:   platform_detection_timeout_seconds: 0.0
+[0m13:36:28.218074 [info ] [MainThread]: Registered adapter: snowflake=1.11.3
+[0m13:36:28.814048 [debug] [MainThread]: Acquiring new snowflake connection 'debug'
+[0m13:36:32.684978 [debug] [MainThread]: Using snowflake connection "debug"
+[0m13:36:32.685536 [debug] [MainThread]: On debug: select 1 as id
+[0m13:36:32.686001 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m13:36:33.615857 [debug] [MainThread]: SQL status: SUCCESS 1 in 0.930 seconds
+[0m13:36:33.617266 [info ] [MainThread]:   Connection test: [[32mOK connection ok[0m]
+
+[0m13:36:33.618241 [info ] [MainThread]: [32mAll checks passed![0m
+[0m13:36:33.620288 [debug] [MainThread]: Command `dbt debug` succeeded at 13:36:33.620062 after 7.29 seconds
+[0m13:36:33.620818 [debug] [MainThread]: Connection 'debug' was left open.
+[0m13:36:33.621272 [debug] [MainThread]: On debug: Close
+[0m13:36:33.719374 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001C5F3D069E0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001C5F3CFF0B0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001C5F11B2250>]}
+[0m13:36:33.720070 [debug] [MainThread]: Flushing usage events
+[0m13:36:33.921989 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m13:39:01.416569 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000013F96DAF8C0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000013F991B7C50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000013F991B79D0>]}
+
+
+============================== 13:39:01.424546 | 9a66a6eb-54e1-406d-9586-cca63bb63023 ==============================
+[0m13:39:01.424546 [info ] [MainThread]: Running with dbt=1.11.7
+[0m13:39:01.425923 [debug] [MainThread]: running dbt with arguments {'static_parser': 'True', 'no_print': 'None', 'version_check': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'printer_width': '80', 'write_json': 'True', 'empty': 'False', 'log_cache_events': 'False', 'introspect': 'True', 'cache_selected_only': 'False', 'log_format': 'default', 'debug': 'False', 'fail_fast': 'False', 'partial_parse': 'True', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'profiles_dir': 'C:\\Users\\jongl\\course', 'invocation_command': 'dbt run', 'use_colors': 'True', 'indirect_selection': 'eager', 'use_experimental_parser': 'False', 'log_path': 'C:\\Users\\jongl\\course\\logs'}
+[0m13:39:02.401081 [debug] [MainThread]: Snowflake adapter: Setting snowflake.connector to ERROR (file logging only)
+[0m13:39:02.402634 [debug] [MainThread]: Snowflake adapter: Setting botocore to ERROR (file logging only)
+[0m13:39:02.403668 [debug] [MainThread]: Snowflake adapter: Setting boto3 to ERROR (file logging only)
+[0m13:39:02.560909 [warn ] [MainThread]: [[33mWARNING[0m][MissingPlusPrefixDeprecation]: Deprecated functionality
+Missing '+' prefix on `airbnb` found at `airbnb` in file
+`C:\Users\jongl\course\dbt_project.yml`. Hierarchical config values without a
+'+' prefix are deprecated in dbt_project.yml.
+[0m13:39:02.562003 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'deprecation', 'label': '9a66a6eb-54e1-406d-9586-cca63bb63023', 'property_': 'warn', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000013F9A3E2D70>]}
+[0m13:39:02.894442 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '9a66a6eb-54e1-406d-9586-cca63bb63023', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000013F98075D00>]}
+[0m13:39:03.055464 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '9a66a6eb-54e1-406d-9586-cca63bb63023', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000013F991B0050>]}
+[0m13:39:03.058487 [info ] [MainThread]: Registered adapter: snowflake=1.11.3
+[0m13:39:03.622078 [debug] [MainThread]: checksum: b80718358155fc17c3559352095564dd56ada1cc1a1c0ef2e62c857e71583775, vars: {}, profile: , target: , version: 1.11.7
+[0m13:39:03.781024 [debug] [MainThread]: Partial parsing enabled: 0 files deleted, 0 files added, 0 files changed.
+[0m13:39:03.781571 [debug] [MainThread]: Nothing changed, skipping partial parsing.
+[0m13:39:03.781962 [debug] [MainThread]: Partial parsing enabled, no changes found, skipping parsing
+[0m13:39:03.782777 [warn ] [MainThread]: [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models
+[0m13:39:03.791678 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': '9a66a6eb-54e1-406d-9586-cca63bb63023', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000013F9A84D6D0>]}
+[0m13:39:03.885548 [debug] [MainThread]: Wrote artifact WritableManifest to C:\Users\jongl\course\target\manifest.json
+[0m13:39:03.889907 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\Users\jongl\course\target\semantic_manifest.json
+[0m13:39:03.943471 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': '9a66a6eb-54e1-406d-9586-cca63bb63023', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000013F9A7F2510>]}
+[0m13:39:03.944390 [info ] [MainThread]: Found 522 macros
+[0m13:39:03.945368 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '9a66a6eb-54e1-406d-9586-cca63bb63023', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000013F9A92FC70>]}
+[0m13:39:03.947759 [warn ] [MainThread]: Nothing to do. Try checking your model configs and model specification args
+[0m13:39:03.952139 [debug] [MainThread]: Command end result
+[0m13:39:03.998567 [debug] [MainThread]: Wrote artifact WritableManifest to C:\Users\jongl\course\target\manifest.json
+[0m13:39:04.003028 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\Users\jongl\course\target\semantic_manifest.json
+[0m13:39:04.009111 [debug] [MainThread]: Wrote artifact RunExecutionResult to C:\Users\jongl\course\target\run_results.json
+[0m13:39:04.010436 [warn ] [MainThread]: [[33mWARNING[0m][DeprecationsSummary]: Deprecated functionality
+Summary of encountered deprecations:
+- MissingPlusPrefixDeprecation: 1 occurrence
+To see all deprecation instances instead of just the first occurrence of each,
+run command again with the `--show-all-deprecations` flag. You may also need to
+run with `--no-partial-parse` as some deprecations are only encountered during
+parsing.
+[0m13:39:04.013372 [debug] [MainThread]: Command `dbt run` succeeded at 13:39:04.013032 after 2.91 seconds
+[0m13:39:04.014483 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000013F991C5910>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000013F9A887540>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000013F9A887750>]}
+[0m13:39:04.015065 [debug] [MainThread]: Flushing usage events
+[0m13:39:04.250587 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m13:46:57.835701 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001AA9B5BB8C0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001AA9D9CBC50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001AA9D9CB9D0>]}
+
+
+============================== 13:46:57.843251 | 3d862452-fb54-4ad9-bdee-dfdfdcba37b8 ==============================
+[0m13:46:57.843251 [info ] [MainThread]: Running with dbt=1.11.7
+[0m13:46:57.844492 [debug] [MainThread]: running dbt with arguments {'static_parser': 'True', 'no_print': 'None', 'version_check': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'printer_width': '80', 'write_json': 'True', 'introspect': 'True', 'log_cache_events': 'False', 'empty': 'False', 'cache_selected_only': 'False', 'fail_fast': 'False', 'debug': 'False', 'log_format': 'default', 'partial_parse': 'True', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'profiles_dir': 'C:\\Users\\jongl\\course', 'invocation_command': 'dbt run', 'indirect_selection': 'eager', 'use_colors': 'True', 'use_experimental_parser': 'False', 'log_path': 'C:\\Users\\jongl\\course\\logs'}
+[0m13:46:58.796367 [debug] [MainThread]: Snowflake adapter: Setting snowflake.connector to ERROR (file logging only)
+[0m13:46:58.797056 [debug] [MainThread]: Snowflake adapter: Setting botocore to ERROR (file logging only)
+[0m13:46:58.797554 [debug] [MainThread]: Snowflake adapter: Setting boto3 to ERROR (file logging only)
+[0m13:46:58.954214 [warn ] [MainThread]: [[33mWARNING[0m][MissingPlusPrefixDeprecation]: Deprecated functionality
+Missing '+' prefix on `airbnb` found at `airbnb` in file
+`C:\Users\jongl\course\dbt_project.yml`. Hierarchical config values without a
+'+' prefix are deprecated in dbt_project.yml.
+[0m13:46:58.955241 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'deprecation', 'label': '3d862452-fb54-4ad9-bdee-dfdfdcba37b8', 'property_': 'warn', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001AA9EC0ED70>]}
+[0m13:46:59.288907 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '3d862452-fb54-4ad9-bdee-dfdfdcba37b8', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001AA9C895D00>]}
+[0m13:46:59.452697 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '3d862452-fb54-4ad9-bdee-dfdfdcba37b8', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001AA9D9D0050>]}
+[0m13:46:59.455035 [info ] [MainThread]: Registered adapter: snowflake=1.11.3
+[0m13:47:00.048256 [debug] [MainThread]: checksum: b80718358155fc17c3559352095564dd56ada1cc1a1c0ef2e62c857e71583775, vars: {}, profile: , target: , version: 1.11.7
+[0m13:47:00.209823 [debug] [MainThread]: Partial parsing enabled: 0 files deleted, 0 files added, 0 files changed.
+[0m13:47:00.210377 [debug] [MainThread]: Nothing changed, skipping partial parsing.
+[0m13:47:00.210775 [debug] [MainThread]: Partial parsing enabled, no changes found, skipping parsing
+[0m13:47:00.211554 [warn ] [MainThread]: [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models
+[0m13:47:00.224141 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': '3d862452-fb54-4ad9-bdee-dfdfdcba37b8', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001AA9F07D6D0>]}
+[0m13:47:00.317700 [debug] [MainThread]: Wrote artifact WritableManifest to C:\Users\jongl\course\target\manifest.json
+[0m13:47:00.322242 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\Users\jongl\course\target\semantic_manifest.json
+[0m13:47:00.374128 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': '3d862452-fb54-4ad9-bdee-dfdfdcba37b8', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001AA9F022510>]}
+[0m13:47:00.375531 [info ] [MainThread]: Found 522 macros
+[0m13:47:00.376757 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '3d862452-fb54-4ad9-bdee-dfdfdcba37b8', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001AA9F15FC70>]}
+[0m13:47:00.380552 [warn ] [MainThread]: Nothing to do. Try checking your model configs and model specification args
+[0m13:47:00.388151 [debug] [MainThread]: Command end result
+[0m13:47:00.440292 [debug] [MainThread]: Wrote artifact WritableManifest to C:\Users\jongl\course\target\manifest.json
+[0m13:47:00.444491 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\Users\jongl\course\target\semantic_manifest.json
+[0m13:47:00.450254 [debug] [MainThread]: Wrote artifact RunExecutionResult to C:\Users\jongl\course\target\run_results.json
+[0m13:47:00.451298 [warn ] [MainThread]: [[33mWARNING[0m][DeprecationsSummary]: Deprecated functionality
+Summary of encountered deprecations:
+- MissingPlusPrefixDeprecation: 1 occurrence
+To see all deprecation instances instead of just the first occurrence of each,
+run command again with the `--show-all-deprecations` flag. You may also need to
+run with `--no-partial-parse` as some deprecations are only encountered during
+parsing.
+[0m13:47:00.453739 [debug] [MainThread]: Command `dbt run` succeeded at 13:47:00.453459 after 2.87 seconds
+[0m13:47:00.454381 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001AA9D9D99D0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001AA9F0B7540>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001AA9F0B7750>]}
+[0m13:47:00.454963 [debug] [MainThread]: Flushing usage events
+[0m13:47:00.760928 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m13:47:25.155206 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001F2D803B8C0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001F2DA44FC50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001F2DA44F9D0>]}
+
+
+============================== 13:47:25.163571 | 9d842a3f-4610-4da4-b317-375e5d8e4ad3 ==============================
+[0m13:47:25.163571 [info ] [MainThread]: Running with dbt=1.11.7
+[0m13:47:25.164859 [debug] [MainThread]: running dbt with arguments {'static_parser': 'True', 'no_print': 'None', 'version_check': 'True', 'target_path': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'printer_width': '80', 'write_json': 'True', 'empty': 'False', 'log_cache_events': 'False', 'introspect': 'True', 'cache_selected_only': 'False', 'fail_fast': 'False', 'debug': 'False', 'log_format': 'default', 'partial_parse': 'True', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'profiles_dir': 'C:\\Users\\jongl\\course', 'invocation_command': 'dbt run', 'use_colors': 'True', 'indirect_selection': 'eager', 'use_experimental_parser': 'False', 'log_path': 'C:\\Users\\jongl\\course\\logs'}
+[0m13:47:26.111959 [debug] [MainThread]: Snowflake adapter: Setting snowflake.connector to ERROR (file logging only)
+[0m13:47:26.112893 [debug] [MainThread]: Snowflake adapter: Setting botocore to ERROR (file logging only)
+[0m13:47:26.113513 [debug] [MainThread]: Snowflake adapter: Setting boto3 to ERROR (file logging only)
+[0m13:47:26.609827 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '9d842a3f-4610-4da4-b317-375e5d8e4ad3', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001F2D87C5350>]}
+[0m13:47:26.776426 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '9d842a3f-4610-4da4-b317-375e5d8e4ad3', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001F2D8D61F20>]}
+[0m13:47:26.778775 [info ] [MainThread]: Registered adapter: snowflake=1.11.3
+[0m13:47:27.475955 [debug] [MainThread]: checksum: b80718358155fc17c3559352095564dd56ada1cc1a1c0ef2e62c857e71583775, vars: {}, profile: , target: , version: 1.11.7
+[0m13:47:27.552742 [info ] [MainThread]: Unable to do partial parsing because a project config has changed
+[0m13:47:27.554023 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'partial_parser', 'label': '9d842a3f-4610-4da4-b317-375e5d8e4ad3', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001F2DB5B9D50>]}
+[0m13:47:29.239975 [warn ] [MainThread]: [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models.airbnb.src
+[0m13:47:29.248477 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': '9d842a3f-4610-4da4-b317-375e5d8e4ad3', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001F2DBA5F2F0>]}
+[0m13:47:29.331887 [debug] [MainThread]: Wrote artifact WritableManifest to C:\Users\jongl\course\target\manifest.json
+[0m13:47:29.337931 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\Users\jongl\course\target\semantic_manifest.json
+[0m13:47:29.398474 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': '9d842a3f-4610-4da4-b317-375e5d8e4ad3', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001F2DBA9B3F0>]}
+[0m13:47:29.399774 [info ] [MainThread]: Found 522 macros
+[0m13:47:29.400913 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '9d842a3f-4610-4da4-b317-375e5d8e4ad3', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001F2DBB0FE10>]}
+[0m13:47:29.403158 [warn ] [MainThread]: Nothing to do. Try checking your model configs and model specification args
+[0m13:47:29.404460 [debug] [MainThread]: Command end result
+[0m13:47:29.453345 [debug] [MainThread]: Wrote artifact WritableManifest to C:\Users\jongl\course\target\manifest.json
+[0m13:47:29.457894 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\Users\jongl\course\target\semantic_manifest.json
+[0m13:47:29.463942 [debug] [MainThread]: Wrote artifact RunExecutionResult to C:\Users\jongl\course\target\run_results.json
+[0m13:47:29.467244 [debug] [MainThread]: Command `dbt run` succeeded at 13:47:29.466806 after 4.56 seconds
+[0m13:47:29.468039 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001F2DA465910>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001F2DBB23AC0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001F2DBB23D80>]}
+[0m13:47:29.468654 [debug] [MainThread]: Flushing usage events
+[0m13:47:29.681480 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m13:48:32.220169 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000180432078C0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001804465BC50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001804465B9D0>]}
+
+
+============================== 13:48:32.231933 | 42fae000-6f78-442c-8708-8e889528b607 ==============================
+[0m13:48:32.231933 [info ] [MainThread]: Running with dbt=1.11.7
+[0m13:48:32.233574 [debug] [MainThread]: running dbt with arguments {'static_parser': 'True', 'no_print': 'None', 'version_check': 'True', 'target_path': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'printer_width': '80', 'write_json': 'True', 'empty': 'False', 'log_cache_events': 'False', 'introspect': 'True', 'cache_selected_only': 'False', 'log_format': 'default', 'debug': 'False', 'fail_fast': 'False', 'partial_parse': 'True', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'profiles_dir': 'C:\\Users\\jongl\\course', 'indirect_selection': 'eager', 'invocation_command': 'dbt run', 'use_colors': 'True', 'use_experimental_parser': 'False', 'log_path': 'C:\\Users\\jongl\\course\\logs'}
+[0m13:48:33.172821 [debug] [MainThread]: Snowflake adapter: Setting snowflake.connector to ERROR (file logging only)
+[0m13:48:33.173674 [debug] [MainThread]: Snowflake adapter: Setting botocore to ERROR (file logging only)
+[0m13:48:33.174201 [debug] [MainThread]: Snowflake adapter: Setting boto3 to ERROR (file logging only)
+[0m13:48:33.663345 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '42fae000-6f78-442c-8708-8e889528b607', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018043995350>]}
+[0m13:48:33.819498 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '42fae000-6f78-442c-8708-8e889528b607', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018043F2DF20>]}
+[0m13:48:33.822000 [info ] [MainThread]: Registered adapter: snowflake=1.11.3
+[0m13:48:34.603550 [debug] [MainThread]: checksum: b80718358155fc17c3559352095564dd56ada1cc1a1c0ef2e62c857e71583775, vars: {}, profile: , target: , version: 1.11.7
+[0m13:48:34.697595 [info ] [MainThread]: Unable to do partial parsing because a project config has changed
+[0m13:48:34.698705 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'partial_parser', 'label': '42fae000-6f78-442c-8708-8e889528b607', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018046829D50>]}
+[0m13:48:36.441990 [warn ] [MainThread]: [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models.airbnb
+[0m13:48:36.451066 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': '42fae000-6f78-442c-8708-8e889528b607', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018046CCF2F0>]}
+[0m13:48:36.532722 [debug] [MainThread]: Wrote artifact WritableManifest to C:\Users\jongl\course\target\manifest.json
+[0m13:48:36.537299 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\Users\jongl\course\target\semantic_manifest.json
+[0m13:48:36.606907 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': '42fae000-6f78-442c-8708-8e889528b607', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018046D0B3F0>]}
+[0m13:48:36.608221 [info ] [MainThread]: Found 522 macros
+[0m13:48:36.609715 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '42fae000-6f78-442c-8708-8e889528b607', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018046D7FE10>]}
+[0m13:48:36.616352 [warn ] [MainThread]: Nothing to do. Try checking your model configs and model specification args
+[0m13:48:36.618234 [debug] [MainThread]: Command end result
+[0m13:48:36.673380 [debug] [MainThread]: Wrote artifact WritableManifest to C:\Users\jongl\course\target\manifest.json
+[0m13:48:36.678155 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\Users\jongl\course\target\semantic_manifest.json
+[0m13:48:36.685331 [debug] [MainThread]: Wrote artifact RunExecutionResult to C:\Users\jongl\course\target\run_results.json
+[0m13:48:36.688458 [debug] [MainThread]: Command `dbt run` succeeded at 13:48:36.688135 after 4.74 seconds
+[0m13:48:36.689293 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001804464D9D0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018046D93AC0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000018046D93D80>]}
+[0m13:48:36.689845 [debug] [MainThread]: Flushing usage events
+[0m13:48:36.867738 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m13:49:58.362543 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000175F386B8C0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000175F4CABC50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000175F4CAB9D0>]}
+
+
+============================== 13:49:58.374481 | 294301bd-c6ae-4e22-9a09-42346bf6c16e ==============================
+[0m13:49:58.374481 [info ] [MainThread]: Running with dbt=1.11.7
+[0m13:49:58.376010 [debug] [MainThread]: running dbt with arguments {'static_parser': 'True', 'no_print': 'None', 'version_check': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'printer_width': '80', 'write_json': 'True', 'empty': 'False', 'log_cache_events': 'False', 'introspect': 'True', 'cache_selected_only': 'False', 'log_format': 'default', 'debug': 'False', 'fail_fast': 'False', 'profiles_dir': 'C:\\Users\\jongl\\course', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'partial_parse': 'True', 'indirect_selection': 'eager', 'use_colors': 'True', 'invocation_command': 'dbt run', 'use_experimental_parser': 'False', 'log_path': 'C:\\Users\\jongl\\course\\logs'}
+[0m13:49:59.317996 [debug] [MainThread]: Snowflake adapter: Setting snowflake.connector to ERROR (file logging only)
+[0m13:49:59.318690 [debug] [MainThread]: Snowflake adapter: Setting botocore to ERROR (file logging only)
+[0m13:49:59.319218 [debug] [MainThread]: Snowflake adapter: Setting boto3 to ERROR (file logging only)
+[0m13:49:59.803030 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '294301bd-c6ae-4e22-9a09-42346bf6c16e', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000175F3FF5350>]}
+[0m13:49:59.962504 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '294301bd-c6ae-4e22-9a09-42346bf6c16e', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000175F4591F20>]}
+[0m13:49:59.964956 [info ] [MainThread]: Registered adapter: snowflake=1.11.3
+[0m13:50:00.551383 [debug] [MainThread]: checksum: b80718358155fc17c3559352095564dd56ada1cc1a1c0ef2e62c857e71583775, vars: {}, profile: , target: , version: 1.11.7
+[0m13:50:00.640703 [info ] [MainThread]: Unable to do partial parsing because a project config has changed
+[0m13:50:00.641763 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'partial_parser', 'label': '294301bd-c6ae-4e22-9a09-42346bf6c16e', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000175F6DE9D50>]}
+[0m13:50:02.338482 [warn ] [MainThread]: [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models.airbnb
+[0m13:50:02.348080 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': '294301bd-c6ae-4e22-9a09-42346bf6c16e', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000175F728F2F0>]}
+[0m13:50:02.434270 [debug] [MainThread]: Wrote artifact WritableManifest to C:\Users\jongl\course\target\manifest.json
+[0m13:50:02.439029 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\Users\jongl\course\target\semantic_manifest.json
+[0m13:50:02.493267 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': '294301bd-c6ae-4e22-9a09-42346bf6c16e', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000175F72C73F0>]}
+[0m13:50:02.494201 [info ] [MainThread]: Found 522 macros
+[0m13:50:02.495115 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '294301bd-c6ae-4e22-9a09-42346bf6c16e', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000175F732BE10>]}
+[0m13:50:02.497469 [warn ] [MainThread]: Nothing to do. Try checking your model configs and model specification args
+[0m13:50:02.498809 [debug] [MainThread]: Command end result
+[0m13:50:02.548341 [debug] [MainThread]: Wrote artifact WritableManifest to C:\Users\jongl\course\target\manifest.json
+[0m13:50:02.552280 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\Users\jongl\course\target\semantic_manifest.json
+[0m13:50:02.558913 [debug] [MainThread]: Wrote artifact RunExecutionResult to C:\Users\jongl\course\target\run_results.json
+[0m13:50:02.562160 [debug] [MainThread]: Command `dbt run` succeeded at 13:50:02.561797 after 4.47 seconds
+[0m13:50:02.563217 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000175F4CB99D0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000175F734FAC0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000175F734FD80>]}
+[0m13:50:02.564953 [debug] [MainThread]: Flushing usage events
+[0m13:50:02.790153 [debug] [MainThread]: An error was encountered while trying to flush usage events
