@@ -99,9 +99,10 @@ sources:
               The host's display name as shown to guests on the platform. May
               be null for some accounts — null values are replaced with
               'Anonymous' in dim_hosts_cleansed.
-            meta:
-              pii: true
-              pii_type: name
+            config:
+              meta:
+                pii: true
+                pii_type: name
 
           - name: is_superhost
             description: >
@@ -158,18 +159,20 @@ sources:
             description: >
               The name of the guest who left the review, as it appears on their
               Airbnb profile.
-            meta:
-              pii: true
-              pii_type: name
+            config:
+              meta:
+                pii: true
+                pii_type: name
 
           - name: comments
             description: >
               The full text of the guest's written review. Renamed to
               review_text in downstream models. Rows where this field is null
               are excluded from fct_reviews.
-            meta:
-              pii: true
-              pii_type: free_text
+            config:
+              meta:
+                pii: true
+                pii_type: free_text
 
           - name: sentiment
             description: >

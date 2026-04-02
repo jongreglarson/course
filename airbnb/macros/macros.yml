@@ -171,7 +171,8 @@ macros:
   - name: learn_variables
     description: >
       Educational macro demonstrating two ways to access variables in dbt:
-      Jinja-scoped variables set with {% set %}, and project-level variables
-      defined in dbt_project.yml and accessed with var(). The project-level
-      user_name variable is defined in dbt_project.yml under vars:.
+      Jinja-scoped variables declared with the set keyword, and project-level
+      variables defined in dbt_project.yml and accessed with var(). The
+      project-level user_name variable is defined in dbt_project.yml under
+      the vars block.
       Not used in production — call with `dbt run-operation learn_variables`.

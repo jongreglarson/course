@@ -214,9 +214,10 @@ models:
           The host's display name as it appears on the Airbnb platform. Null
           values from the source have been replaced with 'Anonymous' to ensure
           every record has a usable name in reports and dashboards.
-        meta:
-          pii: true
-          pii_type: name
+        config:
+          meta:
+            pii: true
+            pii_type: name
         data_tests:
           - not_null
 
@@ -436,9 +437,10 @@ models:
           The host's display name. Null values from the source have been
           defaulted to 'Anonymous' to ensure every listing always has a
           usable host name.
-        meta:
-          pii: true
-          pii_type: name
+        config:
+          meta:
+            pii: true
+            pii_type: name
         data_tests:
           - not_null
 
@@ -514,9 +516,10 @@ models:
         description: >
           The name of the guest who wrote the review, as it appears on their
           Airbnb profile. Not anonymized — reflects the name as submitted.
-        meta:
-          pii: true
-          pii_type: name
+        config:
+          meta:
+            pii: true
+            pii_type: name
         data_tests:
           - not_null
 
@@ -526,9 +529,10 @@ models:
           filtered out upstream, so every row in this table has substantive
           review text. Primary input for NLP, sentiment scoring, and keyword
           analysis.
-        meta:
-          pii: true
-          pii_type: free_text
+        config:
+          meta:
+            pii: true
+            pii_type: free_text
         data_tests:
           - not_null
           - dbt_expectations.expect_column_value_lengths_to_be_between:
@@ -594,18 +598,20 @@ models:
       - name: reviewer_name
         description: >
           The name of the guest who wrote the review.
-        meta:
-          pii: true
-          pii_type: name
+        config:
+          meta:
+            pii: true
+            pii_type: name
         data_tests:
           - not_null
 
       - name: review_text
         description: >
           The full written content of the guest's review.
-        meta:
-          pii: true
-          pii_type: free_text
+        config:
+          meta:
+            pii: true
+            pii_type: free_text
         data_tests:
           - not_null
 
