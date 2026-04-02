@@ -29,22 +29,35 @@ clean-targets:         # directories to be removed by `dbt clean`
 # In this example config, we tell dbt to build all models in the example/
 # directory as views. These settings can be overridden in the individual model
 # files using the `{{ config(...) }}` macro.
+# Ensures the audit log table exists before any model runs. The post-hook
+# on every model inserts a record here, giving a lightweight run history
+# queryable at: SELECT * FROM <schema>.audit_log ORDER BY run_timestamp DESC
 on-run-start:
   - "CREATE TABLE IF NOT EXISTS {{ target.schema }}.audit_log ( model_name STRING, run_timestamp TIMESTAMP )"
 
 models:
   airbnb:
+    +tags: ['airbnb', 'daily']
+    # TRANSFORM role builds models; reporter role gets read-only select for BI tools
     +grants:
       select: ["transform", "reporter"]
+    # Records every model build in the audit log for lineage and debugging
     +post-hook:
       - "INSERT INTO {{ target.schema }}.audit_log VALUES ('{{ this }}', CURRENT_TIMESTAMP)"
     +materialized: view
+    src:
+      # Ephemeral — no physical table created; inlined as CTEs into downstream models
+      +materialized: ephemeral
+      +tags: ['staging']
     dim:
       +materialized: table
+      +tags: ['dimensions']
     fct:
       +materialized: table
-    src:
-      +materialized: ephemeral
+      +tags: ['facts']
+    mart:
+      +materialized: table
+      +tags: ['marts']
 
 vars:
   user_name: default_user_name_for_project
