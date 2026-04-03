@@ -2,7 +2,7 @@ from dagster_dbt import DbtCliResource, dbt_assets
 from dagster import AssetExecutionContext, Definitions
 from pathlib import Path
 
-DBT_PROJECT_DIR = Path(__file__).parent / "airbnb"
+DBT_PROJECT_DIR = Path(__file__).parent
 
 @dbt_assets(
     manifest=DBT_PROJECT_DIR / "target" / "manifest.json",

@@ -3,4 +3,4 @@ locations:
     code_source:
       python_file: airbnb_dbt_assets.py
     build:
-      directory: .
+      directory: airbnb
