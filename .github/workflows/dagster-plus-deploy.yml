@@ -29,4 +29,4 @@ jobs:
             --deployment prod
         env:
           DAGSTER_CLOUD_API_TOKEN: ${{ secrets.DAGSTER_CLOUD_API_TOKEN }}
-          DAGSTER_CLOUD_ORGANIZATION_ID: ${{ secrets.DAGSTER_CLOUD_ORGANIZATION_ID }}
+          DAGSTER_CLOUD_ORGANIZATION: ${{ secrets.DAGSTER_CLOUD_ORGANIZATION_ID }}
