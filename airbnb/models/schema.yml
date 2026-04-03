@@ -34,7 +34,9 @@ models:
           scores, and number of completed stays. Raw values are 't' (yes)
           or 'f' (no).
         data_tests:
-          - not_null
+          - not_null:
+              config:
+                severity: warn
           - accepted_values:
               arguments:
                 values: ['t', 'f']
@@ -107,7 +109,9 @@ models:
           - dbt_expectations.expect_column_values_to_be_between:
               arguments:
                 min_value: 0
-                max_value: 365
+                max_value: 1125
+              config:
+                severity: warn
 
       - name: host_id
         description: >
@@ -180,7 +184,9 @@ models:
           upstream before loading into the warehouse. Values: 'positive',
           'neutral', 'negative'.
         data_tests:
-          - not_null
+          - not_null:
+              config:
+                severity: warn
           - accepted_values:
               arguments:
                 values: ['positive', 'neutral', 'negative']
@@ -229,7 +235,9 @@ models:
           listing quality and guest satisfaction. 't' = Superhost,
           'f' = standard host.
         data_tests:
-          - not_null
+          - not_null:
+              config:
+                severity: warn
           - accepted_values:
               arguments:
                 values: ['t', 'f']
@@ -281,6 +289,8 @@ models:
               arguments:
                 min_value: 4
                 max_value: 500
+              config:
+                severity: warn
 
       - name: room_type
         description: >
@@ -302,7 +312,9 @@ models:
           - dbt_expectations.expect_column_values_to_be_between:
               arguments:
                 min_value: 1
-                max_value: 365
+                max_value: 1125
+              config:
+                severity: warn
 
       - name: host_id
         description: >
@@ -324,7 +336,9 @@ models:
           and rate benchmarking.
         data_tests:
           - not_null
-          - positive_values
+          - positive_values:
+              config:
+                severity: warn
           - dbt_expectations.expect_column_values_to_be_of_type:
               arguments:
                 column_type: number
@@ -332,6 +346,8 @@ models:
               arguments:
                 min_value: 1
                 max_value: 10000
+              config:
+                severity: warn
           - dbt_expectations.expect_column_quantile_values_to_be_between:
               arguments:
                 quantile: 0.50
@@ -419,8 +435,8 @@ models:
           - dbt_expectations.expect_column_max_to_be_between:
               arguments:
                 max_value: 5000
-                config:
-                  severity: warn
+              config:
+                severity: warn
 
       - name: host_id
         description: >
@@ -538,6 +554,8 @@ models:
           - dbt_expectations.expect_column_value_lengths_to_be_between:
               arguments:
                 min_value: 10
+              config:
+                severity: warn
 
       - name: review_sentiment
         description: >

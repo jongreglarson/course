@@ -20,4 +20,4 @@ packages:
   # anomalies, and data freshness across every dbt run. Powers the
   # Elementary dashboard (edr report) for monitoring pipeline health.
   - package: elementary-data/elementary
-    version: 0.16.1
+    version: 0.23.1

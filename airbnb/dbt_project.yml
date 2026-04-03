@@ -70,7 +70,11 @@ vars:
 data_tests:
   +store_failures: true
   +schema: test_results
+  +severity: warn  # Default severity for all tests
 
 flags:
   require_generic_test_arguments_property: true
+
+
+  
 

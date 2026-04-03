@@ -1,0 +1,6 @@
+locations:
+  - location_name: airbnb_dbt
+    code_source:
+      package_name: airbnb_dbt_assets
+    build:
+      directory: .
