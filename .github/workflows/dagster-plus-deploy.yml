@@ -4,22 +4,29 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
 
 jobs:
-  dagster-plus-deploy:
-    name: Deploy to Dagster+
+  deploy:
+    name: Deploy to Dagster+ Serverless
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dagster-cloud CLI
+        run: pip install dagster-cloud
 
       - name: Deploy to Dagster+ Serverless
-        uses: dagster-io/dagster-cloud-action/actions/serverless_prod_deploy@v0.1
-        with:
-          dagster_cloud_api_token: ${{ secrets.DAGSTER_CLOUD_API_TOKEN }}
-          organization_id: ${{ secrets.DAGSTER_CLOUD_ORGANIZATION_ID }}
-          python_version: "3.11"
+        run: |
+          dagster-cloud serverless deploy \
+            --location-name airbnb_dbt \
+            --python-file airbnb/airbnb_dbt_assets.py \
+            --deployment prod
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DAGSTER_CLOUD_API_TOKEN: ${{ secrets.DAGSTER_CLOUD_API_TOKEN }}
+          DAGSTER_CLOUD_ORGANIZATION_ID: ${{ secrets.DAGSTER_CLOUD_ORGANIZATION_ID }}
