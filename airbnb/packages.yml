@@ -15,3 +15,9 @@ packages:
   #   - expect_table_row_count_to_equal_other_table: row count parity across model layers
   - package: metaplane/dbt_expectations
     version: 0.10.10
+
+  # Data observability layer — tracks test results, model run history,
+  # anomalies, and data freshness across every dbt run. Powers the
+  # Elementary dashboard (edr report) for monitoring pipeline health.
+  - package: elementary-data/elementary
+    version: 0.16.1

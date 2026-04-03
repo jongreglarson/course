@@ -58,6 +58,11 @@ models:
     mart:
       +materialized: table
       +tags: ['marts']
+  # Elementary observability — stores test results, run history, and
+  # anomaly detection data in a dedicated schema for the edr dashboard
+  elementary:
+    +schema: elementary
+    +tags: []
 
 vars:
   user_name: default_user_name_for_project
