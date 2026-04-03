@@ -5,13 +5,13 @@ airbnb:
       type: snowflake
       account: "{{ env_var('SNOWFLAKE_ACCOUNT', 'dummy-account') }}"
       user: "{{ env_var('SNOWFLAKE_USER', 'dummy-user') }}"
-      password: "{{ env_var('SNOWFLAKE_PASSWORD', 'dummy-password') }}"
+      private_key: "{{ env_var('SNOWFLAKE_PRIVATE_KEY', 'dummy-key') }}"
+      private_key_passphrase: "{{ env_var('SNOWFLAKE_PRIVATE_KEY_PASSPHRASE', 'dummy') }}"
       role: TRANSFORM
       database: AIRBNB
       schema: DEV
       threads: 1
       warehouse: COMPUTE_WH
-  target: dev
 
 elementary:
   target: dev
@@ -20,10 +20,10 @@ elementary:
       type: snowflake
       account: "{{ env_var('SNOWFLAKE_ACCOUNT', 'dummy-account') }}"
       user: "{{ env_var('SNOWFLAKE_USER', 'dummy-user') }}"
-      password: "{{ env_var('SNOWFLAKE_PASSWORD', 'dummy-password') }}"
+      private_key: "{{ env_var('SNOWFLAKE_PRIVATE_KEY', 'dummy-key') }}"
+      private_key_passphrase: "{{ env_var('SNOWFLAKE_PRIVATE_KEY_PASSPHRASE', 'dummy') }}"
       role: TRANSFORM
       database: AIRBNB
       schema: DEV
       threads: 1
       warehouse: COMPUTE_WH
-  target: dev
