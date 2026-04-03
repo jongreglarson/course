@@ -1,6 +1,6 @@
 locations:
   - location_name: airbnb_dbt
     code_source:
-      package_name: airbnb_dbt_assets
+      python_file: airbnb_dbt_assets.py
     build:
       directory: .
