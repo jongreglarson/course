@@ -1,6 +1,5 @@
 locations:
   - location_name: airbnb_dbt
-    image: dagster/dagster-cloud-examples
     code_source:
       package_name: airbnb_dbt_assets
     build:
