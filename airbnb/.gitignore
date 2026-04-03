@@ -4,5 +4,3 @@ dbt_packages/
 logs/
 dbt_internal_packages/
 
-# Local Snowflake connection config — contains credentials, never commit
-profiles.yml
