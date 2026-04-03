@@ -1,0 +1,1 @@
+{{ test_not_null(column_name="listing_name", model=get_where_subquery(ref('dim_listings_w_hosts'))) }}

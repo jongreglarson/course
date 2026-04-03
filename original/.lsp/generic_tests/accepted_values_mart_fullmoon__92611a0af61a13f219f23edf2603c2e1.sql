@@ -1,0 +1,1 @@
+{{ test_accepted_values(column_name="is_full_moon", model=get_where_subquery(ref('mart_fullmoon_reviews')), values=["full moon","not full moon"]) }}

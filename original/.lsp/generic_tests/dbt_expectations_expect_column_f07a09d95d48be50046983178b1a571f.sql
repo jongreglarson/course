@@ -1,0 +1,1 @@
+{{ dbt_expectations.test_expect_column_values_to_match_regex(column_name="listing_url", model=get_where_subquery(ref('src_listings')), regex="^https://www\\.airbnb\\.com/") }}

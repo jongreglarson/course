@@ -1,0 +1,1 @@
+{{ test_accepted_values(column_name="host_is_superhost", model=get_where_subquery(ref('dim_listings_w_hosts')), values=["t","f"]) }}
