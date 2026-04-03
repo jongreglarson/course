@@ -1,4 +1,7 @@
 
+# Local env var script — contains credentials, never commit
+set_env.ps1
+
 target/
 dbt_packages/
 logs/
