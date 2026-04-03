@@ -1,0 +1,25 @@
+name: Dagster+ Deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+jobs:
+  dagster-plus-deploy:
+    name: Deploy to Dagster+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Deploy to Dagster+ Serverless
+        uses: dagster-io/dagster-cloud-action/actions/serverless_prod_deploy@v0.1
+        with:
+          dagster_cloud_api_token: ${{ secrets.DAGSTER_CLOUD_API_TOKEN }}
+          organization_id: ${{ secrets.DAGSTER_CLOUD_ORGANIZATION_ID }}
+          python_version: "3.11"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
