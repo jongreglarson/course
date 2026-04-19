@@ -7,6 +7,9 @@ on:
     paths:
       - "airbnb/**"
       - "!airbnb/docs/**"
+      - "!airbnb/edr_target/**"
+      - "!airbnb/*.log"
+      - "!airbnb/*.sql"
   workflow_dispatch:
 
 jobs:

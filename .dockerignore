@@ -1,0 +1,43 @@
+# dbt build artifacts
+airbnb/docs/
+airbnb/edr_target/
+airbnb/compiled/
+airbnb/run/
+airbnb/target/
+airbnb/data/
+airbnb/ephemeral/
+airbnb/generic_tests/
+airbnb/schemas/
+airbnb/snapshots/*.sql
+airbnb/airbnb_dbt_assets-*/
+airbnb/*.log
+airbnb/*.sql
+airbnb/*.gpickle
+airbnb/*.msgpack
+airbnb/*.json
+
+# dagster asset snapshots at root
+airbnb_dbt_assets-*/
+compiled/
+run/
+data/
+ephemeral/
+generic_tests/
+schemas/
+snapshots/
+*.log
+*.sql
+*.gpickle
+*.msgpack
+
+# Python
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+.venv/
+*.egg-info/
+
+# Git / editor
+.git/
+.claude/
+airbnb/.claude/
