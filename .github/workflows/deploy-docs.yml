@@ -29,7 +29,7 @@ jobs:
 
       - name: Build site
         run: |
-          mkdir -p _site/original _site/upscaled/assets _site/edr
+          mkdir -p _site/original _site/upscaled/assets _site/edr _site/upscaled-hub
 
           cp airbnb/docs/index.html    _site/original/
           cp airbnb/docs/manifest.json _site/original/
@@ -42,6 +42,62 @@ jobs:
           cp -r airbnb/docs/upscaled/assets/    _site/upscaled/assets/
 
           cp airbnb/edr_target/elementary_report.html _site/edr/index.html
+
+          cat > _site/upscaled-hub/index.html << 'HUBPAGE'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Upscaled Project — Airbnb dbt</title>
+            <style>
+              *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                background: #0f1117; color: #e2e8f0;
+                min-height: 100vh; display: flex; flex-direction: column;
+                align-items: center; justify-content: center; padding: 2rem;
+              }
+              .container { max-width: 560px; width: 100%; text-align: center; }
+              .back { display: inline-block; margin-bottom: 2rem; font-size: 0.8rem; color: #38bdf8; text-decoration: none; }
+              .back:hover { text-decoration: underline; }
+              h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+              h1 span { color: #86efac; }
+              .subtitle { color: #94a3b8; font-size: 0.9rem; margin-bottom: 2.5rem; }
+              .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+              @media (max-width: 420px) { .cards { grid-template-columns: 1fr; } }
+              .card {
+                background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+                padding: 1.75rem 1.25rem; text-decoration: none; color: inherit;
+                transition: border-color 0.2s, transform 0.2s; display: block;
+              }
+              .card:hover { border-color: #86efac; transform: translateY(-2px); }
+              .card-icon { font-size: 1.75rem; margin-bottom: 0.5rem; }
+              .card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; }
+              .card p { font-size: 0.8rem; color: #94a3b8; line-height: 1.5; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <a class="back" href="../">← Back to overview</a>
+              <h1>🚀 <span>Upscaled</span> Project</h1>
+              <p class="subtitle">AI-enhanced dbt pipeline with full documentation, expanded testing, and data observability.</p>
+              <div class="cards">
+                <a class="card" href="../upscaled/">
+                  <div class="card-icon">📖</div>
+                  <h2>dbt Docs</h2>
+                  <p>Full model documentation, lineage graph, and test coverage.</p>
+                </a>
+                <a class="card" href="../edr/">
+                  <div class="card-icon">🔬</div>
+                  <h2>Data Observability</h2>
+                  <p>Elementary report — test results, anomaly detection, and pipeline health.</p>
+                </a>
+              </div>
+            </div>
+          </body>
+          </html>
+          HUBPAGE
 
           touch _site/.nojekyll
 
@@ -81,8 +137,8 @@ jobs:
               h1 { font-size: 2.25rem; font-weight: 700; line-height: 1.2; margin-bottom: 0.75rem; }
               h1 span { color: #38bdf8; }
               .subtitle { color: #94a3b8; font-size: 1rem; line-height: 1.6; margin-bottom: 3rem; max-width: 480px; margin-left: auto; margin-right: auto; }
-              .cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; }
-              @media (max-width: 680px) { .cards { grid-template-columns: 1fr; } }
+              .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; }
+              @media (max-width: 520px) { .cards { grid-template-columns: 1fr; } }
               .card {
                 background: #1e293b;
                 border: 1px solid #334155;
@@ -144,17 +200,11 @@ jobs:
                   <p>Course-baseline pipeline covering staging, core, and mart layers with standard dbt patterns.</p>
                   <span class="tag tag-course">Udemy Course</span>
                 </a>
-                <a class="card" href="upscaled/">
+                <a class="card" href="upscaled-hub/">
                   <div class="card-icon">🚀</div>
                   <h2>Upscaled Project</h2>
                   <p>AI-enhanced version with full documentation, expanded testing, orchestration, and downstream delivery.</p>
                   <span class="tag tag-ai">AI Enhanced</span>
-                </a>
-                <a class="card" href="edr/">
-                  <div class="card-icon">🔬</div>
-                  <h2>Data Observability</h2>
-                  <p>Elementary data reliability report — test results, anomaly detection, and model health across the pipeline.</p>
-                  <span class="tag tag-edr">Elementary</span>
                 </a>
               </div>
 
