@@ -18,6 +18,9 @@ target/*
 # Snapshots compiled output
 snapshots/*.sql
 
+# airbnb_project package — not needed when deploying via --python-file
+airbnb_project/
+
 # Python artifacts
 __pycache__/
 *.pyc
