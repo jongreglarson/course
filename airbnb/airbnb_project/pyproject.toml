@@ -21,7 +21,7 @@ dev = [
 
 [build-system]
 requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+build-backend = "setuptools.build_meta:__legacy__"
 
 [tool.dagster]
 module_name = "airbnb_project.definitions"
