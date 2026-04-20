@@ -3,7 +3,8 @@ airbnb/docs/
 airbnb/edr_target/
 airbnb/compiled/
 airbnb/run/
-airbnb/target/
+airbnb/target/*
+!airbnb/target/manifest.json
 airbnb/data/
 airbnb/ephemeral/
 airbnb/generic_tests/
@@ -14,7 +15,6 @@ airbnb/*.log
 airbnb/*.sql
 airbnb/*.gpickle
 airbnb/*.msgpack
-airbnb/*.json
 
 # dagster asset snapshots at root
 airbnb_dbt_assets-*/
