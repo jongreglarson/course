@@ -56,7 +56,15 @@ def fullmoon_reviews_sheet(context: AssetExecutionContext):
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT * FROM AIRBNB.DEV.mart_fullmoon_reviews ORDER BY review_date"
+            """
+            SELECT
+                TO_DATE(review_date) AS review_date,
+                is_full_moon,
+                COUNT(*) AS review_count
+            FROM AIRBNB.DEV.mart_fullmoon_reviews
+            GROUP BY 1, 2
+            ORDER BY 1
+            """
         )
         columns = [desc[0] for desc in cursor.description]
         rows = cursor.fetchall()
@@ -73,6 +81,7 @@ def fullmoon_reviews_sheet(context: AssetExecutionContext):
     gc = gspread.authorize(creds)
     sheet = gc.open_by_key(os.environ["GOOGLE_SHEET_ID"]).sheet1
     sheet.clear()
+    sheet.resize(rows=len(rows) + 1, cols=len(columns))
     def _serialize(v):
         if isinstance(v, (str, int, float, bool)) or v is None:
             return v
