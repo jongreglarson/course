@@ -73,7 +73,12 @@ def fullmoon_reviews_sheet(context: AssetExecutionContext):
     gc = gspread.authorize(creds)
     sheet = gc.open_by_key(os.environ["GOOGLE_SHEET_ID"]).sheet1
     sheet.clear()
-    sheet.update([columns] + [list(row) for row in rows])
+    def _serialize(v):
+        if isinstance(v, (str, int, float, bool)) or v is None:
+            return v
+        return str(v)
+
+    sheet.update([columns] + [[_serialize(v) for v in row] for row in rows])
 
     context.log.info(f"Wrote {len(rows)} rows to Google Sheet")
 
