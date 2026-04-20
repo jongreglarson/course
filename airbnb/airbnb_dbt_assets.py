@@ -29,7 +29,7 @@ def airbnb_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
 
 
 def _snowflake_conn():
-    pem = os.environ["SNOWFLAKE_PRIVATE_KEY"].encode()
+    pem = os.environ["SNOWFLAKE_PRIVATE_KEY"].replace("\\n", "\n").encode()
     passphrase_str = os.environ.get("SNOWFLAKE_PRIVATE_KEY_PASSPHRASE", "")
     passphrase = passphrase_str.encode() if passphrase_str else None
     private_key = load_pem_private_key(pem, password=passphrase, backend=default_backend())
