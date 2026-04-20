@@ -30,6 +30,9 @@ snapshots/
 *.gpickle
 *.msgpack
 
+# airbnb_project package — not needed when deploying via --python-file
+airbnb/airbnb_project/
+
 # Python
 **/__pycache__/
 **/*.pyc
