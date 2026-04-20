@@ -32,7 +32,8 @@ jobs:
         run: |
           dagster-cloud serverless deploy \
             --location-name airbnb_dbt \
-            --python-file airbnb/airbnb_dbt_assets.py \
+            --working-directory airbnb/airbnb_project \
+            --module-name airbnb_project.definitions \
             --deployment prod
         env:
           DAGSTER_CLOUD_API_TOKEN: ${{ secrets.DAGSTER_CLOUD_API_TOKEN }}
