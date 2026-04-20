@@ -32,7 +32,7 @@ jobs:
         run: |
           dagster-cloud serverless deploy \
             --location-name airbnb_dbt \
-            --working-directory airbnb/airbnb_project \
+            --working-directory airbnb \
             --module-name airbnb_project.definitions \
             --deployment prod
         env:

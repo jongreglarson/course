@@ -1,0 +1,36 @@
+# dbt build artifacts — large, not needed in container
+compiled/
+run/
+docs/
+edr_target/
+ephemeral/
+generic_tests/
+schemas/
+data/
+logs/
+dbt_packages/
+airbnb_dbt_assets-*/
+
+# Keep target/manifest.json but exclude everything else in target/
+target/*
+!target/manifest.json
+
+# Snapshots compiled output
+snapshots/*.sql
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+
+# Logs and temp files
+*.log
+query_log.sql
+*.gpickle
+*.msgpack
+
+# Editor / Claude
+.claude/
+set_env.ps1
