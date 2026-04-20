@@ -33,6 +33,9 @@ snapshots/
 # airbnb_project package — not needed when deploying via --python-file
 airbnb/airbnb_project/
 
+# Root pyproject.toml (dbt-bootcamp course package, not needed in container)
+pyproject.toml
+
 # Python
 **/__pycache__/
 **/*.pyc
