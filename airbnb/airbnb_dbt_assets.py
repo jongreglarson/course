@@ -61,9 +61,10 @@ def fullmoon_reviews_sheet(context: AssetExecutionContext):
                 TO_DATE(review_date) AS review_date,
                 is_full_moon,
                 review_sentiment,
+                is_lycanthrope,
                 COUNT(*) AS review_count
             FROM AIRBNB.DEV.mart_fullmoon_reviews
-            GROUP BY 1, 2, 3
+            GROUP BY 1, 2, 3, 4
             ORDER BY 1
             """
         )
