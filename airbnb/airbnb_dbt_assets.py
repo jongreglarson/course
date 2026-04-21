@@ -25,7 +25,7 @@ GOOGLE_SCOPES = [
 
 @dbt_assets(manifest=DBT_PROJECT_DIR / "target" / "manifest.json")
 def airbnb_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
-    yield from dbt.cli(["deps"], context=context).stream()
+    dbt.cli(["deps"]).wait()
     yield from dbt.cli(["build"], context=context).stream()
 
 
