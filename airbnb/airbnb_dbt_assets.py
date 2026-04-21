@@ -26,7 +26,7 @@ GOOGLE_SCOPES = [
 @dbt_assets(manifest=DBT_PROJECT_DIR / "target" / "manifest.json")
 def airbnb_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
     dbt.cli(["deps"]).wait()
-    yield from dbt.cli(["build"], context=context).stream()
+    yield from dbt.cli(["build", "--exclude", "package:elementary"], context=context).stream()
 
 
 def _snowflake_conn():
