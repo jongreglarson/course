@@ -266,6 +266,38 @@ dbt source freshness
 
 ---
 
+## Orchestration & Delivery
+
+This project is orchestrated with **[Dagster+](https://dagster.io/)** (Serverless). The dbt models are registered as Dagster assets, giving full asset lineage, run history, and alerting in the Dagster Cloud UI.
+
+### Asset pipeline
+
+```text
+airbnb_dbt_assets  →  fullmoon_reviews_sheet
+(dbt build)            (Snowflake → Google Sheets)
+```
+
+After each successful dbt run, a downstream Dagster asset queries the `mart_fullmoon_reviews` mart and writes an aggregated summary to Google Sheets — ready to connect as a live Tableau Public data source.
+
+### Google Sheets export schema
+
+| Column | Description |
+| --- | --- |
+| `review_date` | Date of the review |
+| `is_full_moon` | Whether the review was written the night after a full moon |
+| `review_sentiment` | Pre-scored sentiment from source data (positive / neutral / negative) |
+| `is_lycanthrope` | Deterministic flag marking ~2% of reviewers as werewolves (based on reviewer hash) |
+| `review_count` | Number of reviews matching this combination |
+
+### Deployment
+
+CI/CD is handled by two GitHub Actions workflows:
+
+- **`dagster-plus-deploy.yml`** — builds and pushes a Docker image to Dagster+ Serverless on every push to `main` that touches `airbnb/`
+- **`deploy-docs.yml`** — publishes dbt docs and Elementary observability report to [GitHub Pages](https://jongreglarson.github.io/course/) on every docs change
+
+---
+
 ## Key models at a glance
 
 | Model | Layer | Grain | Description |
