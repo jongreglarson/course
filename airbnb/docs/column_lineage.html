@@ -107,8 +107,9 @@
     .legend-item:hover { border-color: #475569; }
     .legend-item.active { border-color: #60a5fa; }
     .legend-dot {
-      width: 12px;
-      height: 12px;
+      display: inline-block;
+      width: 14px;
+      height: 14px;
       border-radius: 3px;
       flex-shrink: 0;
     }
@@ -141,6 +142,24 @@
       color: #64748b;
       margin-left: 4px;
     }
+    .trace-label {
+      font-size: 12px;
+      color: #94a3b8;
+      white-space: nowrap;
+    }
+    #traceSelect {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 5px;
+      color: #f1f5f9;
+      font-size: 12px;
+      padding: 4px 8px;
+      max-width: 280px;
+      cursor: pointer;
+      outline: none;
+    }
+    #traceSelect:focus { border-color: #60a5fa; }
+    #traceSelect option { background: #1e293b; }
 
     /* ---- Graph ---- */
     #network {
@@ -206,6 +225,12 @@
   <div class="toolbar-sep"></div>
   <button class="toolbar-btn" id="togglePhysicsBtn" onclick="togglePhysics()">Physics: Off</button>
   <button class="toolbar-btn" onclick="exportPNG()">Export PNG</button>
+  <div class="toolbar-sep"></div>
+  <span class="trace-label">Trace full lineage:</span>
+  <select id="traceSelect" onchange="onTraceSelect()">
+    <option value="">— pick a column —</option>
+  </select>
+  <button class="toolbar-btn" onclick="clearTrace()">Clear</button>
 </div>
 
 <div id="network"></div>
@@ -300,70 +325,156 @@ network.on('zoom', () => {
     'Zoom: ' + (network.getScale() * 100).toFixed(0) + '%';
 });
 
-// ---- Highlight on click ----
+// ---- BFS full-lineage traversal ----
+function bfsUpstream(nodeId) {
+  const visited = new Set();
+  const queue = [...(edgeTo[nodeId] || [])];
+  while (queue.length) {
+    const curr = queue.shift();
+    if (!visited.has(curr)) {
+      visited.add(curr);
+      (edgeTo[curr] || []).forEach(p => { if (!visited.has(p)) queue.push(p); });
+    }
+  }
+  return visited;
+}
+
+function bfsDownstream(nodeId) {
+  const visited = new Set();
+  const queue = [...(edgeFrom[nodeId] || [])];
+  while (queue.length) {
+    const curr = queue.shift();
+    if (!visited.has(curr)) {
+      visited.add(curr);
+      (edgeFrom[curr] || []).forEach(c => { if (!visited.has(c)) queue.push(c); });
+    }
+  }
+  return visited;
+}
+
+// ---- Highlight on click (direct neighbors only) ----
 let selectedNode = null;
-const DIM_OPACITY = 0.12;
+const DIM_OPACITY = 0.1;
 
 function resetHighlight() {
   selectedNode = null;
-  nodes.forEach(n => {
-    nodes.update({ id: n.id, opacity: 1.0 });
-  });
-  edges.forEach(e => {
-    edges.update({ id: e.id, opacity: 1.0, width: 1.5, color: { color: '#475569', highlight: '#f1f5f9', hover: '#94a3b8' } });
-  });
+  document.getElementById('traceSelect').value = '';
+  nodes.forEach(n => nodes.update({ id: n.id, opacity: 1.0, color: undefined }));
+  edges.forEach(e => edges.update({
+    id: e.id, opacity: 1.0, width: 1.5,
+    color: { color: '#475569', highlight: '#f1f5f9', hover: '#94a3b8' }
+  }));
   document.getElementById('statusMsg').textContent =
-    'Ready — click a node to highlight its lineage path';
+    'Ready — click a node to see neighbors, or use Trace to follow the full lineage';
 }
 
 network.on('click', params => {
-  if (params.nodes.length === 0) {
-    resetHighlight();
-    return;
-  }
+  if (params.nodes.length === 0) { resetHighlight(); return; }
   const clickedId = params.nodes[0];
-  if (selectedNode === clickedId) {
-    resetHighlight();
-    return;
-  }
+  if (selectedNode === clickedId) { resetHighlight(); return; }
   selectedNode = clickedId;
-  highlightNode(clickedId);
-});
 
-function highlightNode(nodeId) {
-  // Collect directly connected nodes and edges
-  const connectedNodes = new Set([nodeId]);
+  const connectedNodes = new Set([clickedId]);
   const connectedEdges = new Set();
-
   edgesData.forEach(e => {
-    if (e.from === nodeId || e.to === nodeId) {
+    if (e.from === clickedId || e.to === clickedId) {
       connectedNodes.add(e.from);
       connectedNodes.add(e.to);
       connectedEdges.add(e.id);
     }
   });
-
-  nodes.forEach(n => {
-    nodes.update({ id: n.id, opacity: connectedNodes.has(n.id) ? 1.0 : DIM_OPACITY });
-  });
+  nodes.forEach(n => nodes.update({ id: n.id, opacity: connectedNodes.has(n.id) ? 1.0 : DIM_OPACITY }));
   edges.forEach(e => {
     const active = connectedEdges.has(e.id);
     edges.update({
-      id: e.id,
-      opacity: active ? 1.0 : 0.05,
-      width: active ? 2.5 : 1,
+      id: e.id, opacity: active ? 1.0 : 0.05, width: active ? 2.5 : 1,
       color: active
         ? { color: '#f8fafc', highlight: '#f8fafc', hover: '#f8fafc' }
         : { color: '#1e293b', highlight: '#1e293b', hover: '#1e293b' },
     });
   });
+  const nd = nodesData.find(n => n.id === clickedId);
+  const upCount   = (edgeTo[clickedId]   || []).length;
+  const downCount = (edgeFrom[clickedId] || []).length;
+  document.getElementById('statusMsg').textContent =
+    `Selected: ${nd.model}.${nd.column}  |  ${upCount} direct upstream  ·  ${downCount} direct downstream  (use Trace for full path)`;
+}
+);
+
+// ---- Full lineage trace ----
+function traceFullLineage(nodeId) {
+  selectedNode = nodeId;
+  const upstream   = bfsUpstream(nodeId);
+  const downstream = bfsDownstream(nodeId);
+
+  // Color nodes by role in the lineage
+  nodes.forEach(n => {
+    if (n.id === nodeId) {
+      nodes.update({ id: n.id, opacity: 1.0 });
+    } else if (upstream.has(n.id)) {
+      nodes.update({ id: n.id, opacity: 1.0 });
+    } else if (downstream.has(n.id)) {
+      nodes.update({ id: n.id, opacity: 1.0 });
+    } else {
+      nodes.update({ id: n.id, opacity: DIM_OPACITY });
+    }
+  });
+
+  // Color edges: upstream path blue, downstream path orange, rest dimmed
+  edges.forEach(e => {
+    const isUpEdge   = upstream.has(e.from)   && (upstream.has(e.to)   || e.to   === nodeId);
+    const isDownEdge = downstream.has(e.to)   && (downstream.has(e.from) || e.from === nodeId);
+    if (isUpEdge) {
+      edges.update({ id: e.id, opacity: 1.0, width: 2.5, color: { color: '#60a5fa', highlight: '#93c5fd', hover: '#93c5fd' } });
+    } else if (isDownEdge) {
+      edges.update({ id: e.id, opacity: 1.0, width: 2.5, color: { color: '#fb923c', highlight: '#fdba74', hover: '#fdba74' } });
+    } else {
+      edges.update({ id: e.id, opacity: 0.04, width: 1, color: { color: '#1e293b', highlight: '#1e293b', hover: '#1e293b' } });
+    }
+  });
 
   const nd = nodesData.find(n => n.id === nodeId);
-  const upCount   = (edgeTo[nodeId]   || []).length;
-  const downCount = (edgeFrom[nodeId] || []).length;
   document.getElementById('statusMsg').textContent =
-    `Selected: ${nd.model}.${nd.column}  |  ${upCount} upstream  ·  ${downCount} downstream`;
+    `Full lineage of ${nd.model}.${nd.column}  |  ${upstream.size} upstream nodes (blue arrows)  ·  ${downstream.size} downstream nodes (orange arrows)`;
+
+  // Zoom to the lineage subgraph
+  const visible = [nodeId, ...upstream, ...downstream];
+  network.fit({ nodes: visible, animation: { duration: 500, easingFunction: 'easeInOutQuad' } });
 }
+
+function onTraceSelect() {
+  const val = document.getElementById('traceSelect').value;
+  if (!val) { resetHighlight(); return; }
+  resetHighlight();
+  traceFullLineage(parseInt(val));
+}
+
+function clearTrace() {
+  document.getElementById('traceSelect').value = '';
+  resetHighlight();
+}
+
+// Populate the trace dropdown after data is ready
+(function populateTraceSelect() {
+  const sel = document.getElementById('traceSelect');
+  // Group by model
+  const byModel = {};
+  nodesData.forEach(n => {
+    if (!byModel[n.model]) byModel[n.model] = [];
+    byModel[n.model].push(n);
+  });
+  Object.keys(byModel).sort().forEach(model => {
+    const grp = document.createElement('optgroup');
+    grp.label = model;
+    byModel[model].forEach(n => {
+      const opt = document.createElement('option');
+      opt.value = n.id;
+      opt.textContent = n.column;
+      grp.appendChild(opt);
+    });
+    sel.appendChild(grp);
+  });
+})();
 
 // ---- Search / filter ----
 let activeLayerFilter = null;
