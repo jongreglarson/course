@@ -345,8 +345,6 @@ HTML_TEMPLATE = """\
 
     /* ---- Graph ---- */
     #network {
-      flex: 1;
-      min-height: 0;
       background: #0f172a;
       position: relative;
     }
@@ -419,6 +417,17 @@ HTML_TEMPLATE = """\
 </div>
 
 <script>
+// Size the canvas explicitly so vis.js gets a non-zero container height
+function sizeCanvas() {
+  const header  = document.querySelector('header').offsetHeight;
+  const toolbar = document.querySelector('.toolbar').offsetHeight;
+  const status  = document.getElementById('statusBar').offsetHeight;
+  document.getElementById('network').style.height =
+    (window.innerHeight - header - toolbar - status) + 'px';
+}
+sizeCanvas();
+window.addEventListener('resize', () => { sizeCanvas(); network && network.fit(); });
+
 // ---- Data ----
 const nodesData = __NODES_JSON__;
 const edgesData = __EDGES_JSON__;
@@ -481,10 +490,10 @@ const options = {
 
 const network = new vis.Network(container, { nodes, edges }, options);
 
-// Fit once after first draw (stabilized never fires when physics is off)
-network.once('afterDrawing', () => {
+// Fit after a short delay to ensure layout is complete
+setTimeout(() => {
   network.fit({ animation: { duration: 600, easingFunction: 'easeInOutQuad' } });
-});
+}, 200);
 
 // Zoom level display
 network.on('zoom', () => {
