@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Column-Level Lineage — Airbnb dbt Project</title>
+  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ---- Header ---- */
+    header {
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    header h1 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #f1f5f9;
+      white-space: nowrap;
+    }
+    header .subtitle {
+      font-size: 12px;
+      color: #94a3b8;
+      white-space: nowrap;
+    }
+
+    /* ---- Search ---- */
+    .search-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .search-wrap label {
+      font-size: 12px;
+      color: #94a3b8;
+      white-space: nowrap;
+    }
+    #searchBox {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: #f1f5f9;
+      font-size: 13px;
+      padding: 5px 10px;
+      width: 220px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    #searchBox:focus { border-color: #60a5fa; }
+    #clearBtn {
+      background: #334155;
+      border: none;
+      border-radius: 6px;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 13px;
+      padding: 5px 10px;
+      transition: background 0.15s, color 0.15s;
+    }
+    #clearBtn:hover { background: #475569; color: #f1f5f9; }
+
+    /* ---- Legend ---- */
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+    .legend-title {
+      font-size: 11px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: #cbd5e1;
+      cursor: pointer;
+      padding: 3px 7px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      transition: border-color 0.15s;
+    }
+    .legend-item:hover { border-color: #475569; }
+    .legend-item.active { border-color: #60a5fa; }
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    /* ---- Toolbar ---- */
+    .toolbar {
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+      padding: 6px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .toolbar-btn {
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 5px;
+      color: #cbd5e1;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 4px 12px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .toolbar-btn:hover { background: #475569; color: #f1f5f9; }
+    .toolbar-sep { width: 1px; height: 18px; background: #334155; margin: 0 4px; }
+    .match-count {
+      font-size: 12px;
+      color: #64748b;
+      margin-left: 4px;
+    }
+
+    /* ---- Graph ---- */
+    #network {
+      flex: 1;
+      background: #0f172a;
+      position: relative;
+    }
+
+    /* ---- Status bar ---- */
+    #statusBar {
+      background: #1e293b;
+      border-top: 1px solid #334155;
+      padding: 4px 20px;
+      font-size: 11px;
+      color: #64748b;
+      flex-shrink: 0;
+      display: flex;
+      gap: 20px;
+    }
+
+    /* ---- Tooltip override (vis uses title attr, we style the vis tooltip) ---- */
+    .vis-tooltip {
+      background: #1e293b !important;
+      border: 1px solid #334155 !important;
+      color: #e2e8f0 !important;
+      border-radius: 6px !important;
+      font-size: 12px !important;
+      padding: 8px 12px !important;
+      max-width: 260px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Column-Level Lineage — Airbnb dbt Project</h1>
+    <div class="subtitle">77 columns &nbsp;·&nbsp; 56 edges &nbsp;·&nbsp; click a node to highlight connections</div>
+  </div>
+
+  <div class="legend">
+    <span class="legend-title">Layer</span>
+    <span class="legend-item" data-layer="raw"     onclick="filterLayer(this)"><span class="legend-dot" style="background:#94a3b8"></span>Sources (raw)</span>
+    <span class="legend-item" data-layer="staging" onclick="filterLayer(this)"><span class="legend-dot" style="background:#60a5fa"></span>Staging (src_*)</span>
+    <span class="legend-item" data-layer="dim"     onclick="filterLayer(this)"><span class="legend-dot" style="background:#34d399"></span>Dimensions (dim_*)</span>
+    <span class="legend-item" data-layer="fct"     onclick="filterLayer(this)"><span class="legend-dot" style="background:#fb923c"></span>Facts (fct_*)</span>
+    <span class="legend-item" data-layer="mart"    onclick="filterLayer(this)"><span class="legend-dot" style="background:#c084fc"></span>Marts (mart_*)</span>
+  </div>
+
+  <div class="search-wrap">
+    <label for="searchBox">Search</label>
+    <input id="searchBox" type="text" placeholder="model or column name…" oninput="onSearch()" />
+    <button id="clearBtn" onclick="clearSearch()">Clear</button>
+    <span class="match-count" id="matchCount"></span>
+  </div>
+</header>
+
+<div class="toolbar">
+  <button class="toolbar-btn" onclick="network.fit()">Fit All</button>
+  <button class="toolbar-btn" onclick="resetHighlight()">Reset</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn" onclick="network.moveTo({scale: network.getScale() * 1.25})">Zoom +</button>
+  <button class="toolbar-btn" onclick="network.moveTo({scale: network.getScale() * 0.8})">Zoom −</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn" id="togglePhysicsBtn" onclick="togglePhysics()">Physics: Off</button>
+  <button class="toolbar-btn" onclick="exportPNG()">Export PNG</button>
+</div>
+
+<div id="network"></div>
+
+<div id="statusBar">
+  <span id="statusMsg">Ready — click a node to highlight its lineage path</span>
+  <span style="margin-left:auto" id="zoomLevel"></span>
+</div>
+
+<script>
+// ---- Data ----
+const nodesData = [{"id": 1, "label": "raw_hosts\n.id", "title": "<b>raw_hosts</b><br/><code>id</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_hosts", "column": "id"}, {"id": 2, "label": "raw_hosts\n.name", "title": "<b>raw_hosts</b><br/><code>name</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_hosts", "column": "name"}, {"id": 3, "label": "raw_hosts\n.is_superhost", "title": "<b>raw_hosts</b><br/><code>is_superhost</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_hosts", "column": "is_superhost"}, {"id": 4, "label": "raw_hosts\n.created_at", "title": "<b>raw_hosts</b><br/><code>created_at</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_hosts", "column": "created_at"}, {"id": 5, "label": "raw_hosts\n.updated_at", "title": "<b>raw_hosts</b><br/><code>updated_at</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_hosts", "column": "updated_at"}, {"id": 6, "label": "raw_listings\n.id", "title": "<b>raw_listings</b><br/><code>id</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_listings", "column": "id"}, {"id": 7, "label": "raw_listings\n.name", "title": "<b>raw_listings</b><br/><code>name</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_listings", "column": "name"}, {"id": 8, "label": "raw_listings\n.listing_url", "title": "<b>raw_listings</b><br/><code>listing_url</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_listings", "column": "listing_url"}, {"id": 9, "label": "raw_listings\n.room_type", "title": "<b>raw_listings</b><br/><code>room_type</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_listings", "column": "room_type"}, {"id": 10, "label": "raw_listings\n.minimum_nights", "title": "<b>raw_listings</b><br/><code>minimum_nights</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_listings", "column": "minimum_nights"}, {"id": 11, "label": "raw_listings\n.host_id", "title": "<b>raw_listings</b><br/><code>host_id</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_listings", "column": "host_id"}, {"id": 12, "label": "raw_listings\n.price", "title": "<b>raw_listings</b><br/><code>price</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_listings", "column": "price"}, {"id": 13, "label": "raw_listings\n.created_at", "title": "<b>raw_listings</b><br/><code>created_at</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_listings", "column": "created_at"}, {"id": 14, "label": "raw_listings\n.updated_at", "title": "<b>raw_listings</b><br/><code>updated_at</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_listings", "column": "updated_at"}, {"id": 15, "label": "raw_reviews\n.listing_id", "title": "<b>raw_reviews</b><br/><code>listing_id</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_reviews", "column": "listing_id"}, {"id": 16, "label": "raw_reviews\n.date", "title": "<b>raw_reviews</b><br/><code>date</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_reviews", "column": "date"}, {"id": 17, "label": "raw_reviews\n.reviewer_name", "title": "<b>raw_reviews</b><br/><code>reviewer_name</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_reviews", "column": "reviewer_name"}, {"id": 18, "label": "raw_reviews\n.comments", "title": "<b>raw_reviews</b><br/><code>comments</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_reviews", "column": "comments"}, {"id": 19, "label": "raw_reviews\n.sentiment", "title": "<b>raw_reviews</b><br/><code>sentiment</code><br/><i>Layer: raw</i>", "group": "raw", "color": {"background": "#94a3b8", "border": "#64748b", "highlight": {"background": "#cbd5e1", "border": "#94a3b8"}, "hover": {"background": "#cbd5e1", "border": "#94a3b8"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "raw", "model": "raw_reviews", "column": "sentiment"}, {"id": 20, "label": "src_hosts\n.host_id", "title": "<b>src_hosts</b><br/><code>host_id</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_hosts", "column": "host_id"}, {"id": 21, "label": "src_hosts\n.host_name", "title": "<b>src_hosts</b><br/><code>host_name</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_hosts", "column": "host_name"}, {"id": 22, "label": "src_hosts\n.is_superhost", "title": "<b>src_hosts</b><br/><code>is_superhost</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_hosts", "column": "is_superhost"}, {"id": 23, "label": "src_hosts\n.created_at", "title": "<b>src_hosts</b><br/><code>created_at</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_hosts", "column": "created_at"}, {"id": 24, "label": "src_hosts\n.updated_at", "title": "<b>src_hosts</b><br/><code>updated_at</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_hosts", "column": "updated_at"}, {"id": 25, "label": "src_listings\n.listing_id", "title": "<b>src_listings</b><br/><code>listing_id</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_listings", "column": "listing_id"}, {"id": 26, "label": "src_listings\n.listing_name", "title": "<b>src_listings</b><br/><code>listing_name</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_listings", "column": "listing_name"}, {"id": 27, "label": "src_listings\n.listing_url", "title": "<b>src_listings</b><br/><code>listing_url</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_listings", "column": "listing_url"}, {"id": 28, "label": "src_listings\n.room_type", "title": "<b>src_listings</b><br/><code>room_type</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_listings", "column": "room_type"}, {"id": 29, "label": "src_listings\n.minimum_nights", "title": "<b>src_listings</b><br/><code>minimum_nights</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_listings", "column": "minimum_nights"}, {"id": 30, "label": "src_listings\n.host_id", "title": "<b>src_listings</b><br/><code>host_id</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_listings", "column": "host_id"}, {"id": 31, "label": "src_listings\n.price_str", "title": "<b>src_listings</b><br/><code>price_str</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_listings", "column": "price_str"}, {"id": 32, "label": "src_listings\n.created_at", "title": "<b>src_listings</b><br/><code>created_at</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_listings", "column": "created_at"}, {"id": 33, "label": "src_listings\n.updated_at", "title": "<b>src_listings</b><br/><code>updated_at</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_listings", "column": "updated_at"}, {"id": 34, "label": "src_reviews\n.listing_id", "title": "<b>src_reviews</b><br/><code>listing_id</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_reviews", "column": "listing_id"}, {"id": 35, "label": "src_reviews\n.review_date", "title": "<b>src_reviews</b><br/><code>review_date</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_reviews", "column": "review_date"}, {"id": 36, "label": "src_reviews\n.reviewer_name", "title": "<b>src_reviews</b><br/><code>reviewer_name</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_reviews", "column": "reviewer_name"}, {"id": 37, "label": "src_reviews\n.review_text", "title": "<b>src_reviews</b><br/><code>review_text</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_reviews", "column": "review_text"}, {"id": 38, "label": "src_reviews\n.review_sentiment", "title": "<b>src_reviews</b><br/><code>review_sentiment</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_reviews", "column": "review_sentiment"}, {"id": 39, "label": "src_reviews\n.is_lycanthrope", "title": "<b>src_reviews</b><br/><code>is_lycanthrope</code><br/><i>Layer: staging</i>", "group": "staging", "color": {"background": "#60a5fa", "border": "#3b82f6", "highlight": {"background": "#93c5fd", "border": "#60a5fa"}, "hover": {"background": "#93c5fd", "border": "#60a5fa"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "staging", "model": "src_reviews", "column": "is_lycanthrope"}, {"id": 40, "label": "dim_hosts_cleansed\n.host_id", "title": "<b>dim_hosts_cleansed</b><br/><code>host_id</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_hosts_cleansed", "column": "host_id"}, {"id": 41, "label": "dim_hosts_cleansed\n.host_name", "title": "<b>dim_hosts_cleansed</b><br/><code>host_name</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_hosts_cleansed", "column": "host_name"}, {"id": 42, "label": "dim_hosts_cleansed\n.is_superhost", "title": "<b>dim_hosts_cleansed</b><br/><code>is_superhost</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_hosts_cleansed", "column": "is_superhost"}, {"id": 43, "label": "dim_hosts_cleansed\n.created_at", "title": "<b>dim_hosts_cleansed</b><br/><code>created_at</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_hosts_cleansed", "column": "created_at"}, {"id": 44, "label": "dim_hosts_cleansed\n.updated_at", "title": "<b>dim_hosts_cleansed</b><br/><code>updated_at</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_hosts_cleansed", "column": "updated_at"}, {"id": 45, "label": "dim_listings_cleansed\n.listing_id", "title": "<b>dim_listings_cleansed</b><br/><code>listing_id</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_listings_cleansed", "column": "listing_id"}, {"id": 46, "label": "dim_listings_cleansed\n.listing_name", "title": "<b>dim_listings_cleansed</b><br/><code>listing_name</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_listings_cleansed", "column": "listing_name"}, {"id": 47, "label": "dim_listings_cleansed\n.room_type", "title": "<b>dim_listings_cleansed</b><br/><code>room_type</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_listings_cleansed", "column": "room_type"}, {"id": 48, "label": "dim_listings_cleansed\n.minimum_nights", "title": "<b>dim_listings_cleansed</b><br/><code>minimum_nights</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_listings_cleansed", "column": "minimum_nights"}, {"id": 49, "label": "dim_listings_cleansed\n.host_id", "title": "<b>dim_listings_cleansed</b><br/><code>host_id</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_listings_cleansed", "column": "host_id"}, {"id": 50, "label": "dim_listings_cleansed\n.price", "title": "<b>dim_listings_cleansed</b><br/><code>price</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_listings_cleansed", "column": "price"}, {"id": 51, "label": "dim_listings_cleansed\n.created_at", "title": "<b>dim_listings_cleansed</b><br/><code>created_at</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_listings_cleansed", "column": "created_at"}, {"id": 52, "label": "dim_listings_cleansed\n.updated_at", "title": "<b>dim_listings_cleansed</b><br/><code>updated_at</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_listings_cleansed", "column": "updated_at"}, {"id": 53, "label": "dim_listings_w_hosts\n.listing_id", "title": "<b>dim_listings_w_hosts</b><br/><code>listing_id</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_listings_w_hosts", "column": "listing_id"}, {"id": 54, "label": "dim_listings_w_hosts\n.listing_name", "title": "<b>dim_listings_w_hosts</b><br/><code>listing_name</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_listings_w_hosts", "column": "listing_name"}, {"id": 55, "label": "dim_listings_w_hosts\n.room_type", "title": "<b>dim_listings_w_hosts</b><br/><code>room_type</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_listings_w_hosts", "column": "room_type"}, {"id": 56, "label": "dim_listings_w_hosts\n.minimum_nights", "title": "<b>dim_listings_w_hosts</b><br/><code>minimum_nights</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_listings_w_hosts", "column": "minimum_nights"}, {"id": 57, "label": "dim_listings_w_hosts\n.price", "title": "<b>dim_listings_w_hosts</b><br/><code>price</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_listings_w_hosts", "column": "price"}, {"id": 58, "label": "dim_listings_w_hosts\n.host_id", "title": "<b>dim_listings_w_hosts</b><br/><code>host_id</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_listings_w_hosts", "column": "host_id"}, {"id": 59, "label": "dim_listings_w_hosts\n.host_name", "title": "<b>dim_listings_w_hosts</b><br/><code>host_name</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_listings_w_hosts", "column": "host_name"}, {"id": 60, "label": "dim_listings_w_hosts\n.host_is_superhost", "title": "<b>dim_listings_w_hosts</b><br/><code>host_is_superhost</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_listings_w_hosts", "column": "host_is_superhost"}, {"id": 61, "label": "dim_listings_w_hosts\n.created_at", "title": "<b>dim_listings_w_hosts</b><br/><code>created_at</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_listings_w_hosts", "column": "created_at"}, {"id": 62, "label": "dim_listings_w_hosts\n.updated_at", "title": "<b>dim_listings_w_hosts</b><br/><code>updated_at</code><br/><i>Layer: dim</i>", "group": "dim", "color": {"background": "#34d399", "border": "#10b981", "highlight": {"background": "#6ee7b7", "border": "#34d399"}, "hover": {"background": "#6ee7b7", "border": "#34d399"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "dim", "model": "dim_listings_w_hosts", "column": "updated_at"}, {"id": 63, "label": "fct_reviews\n.review_id", "title": "<b>fct_reviews</b><br/><code>review_id</code><br/><i>Layer: fct</i>", "group": "fct", "color": {"background": "#fb923c", "border": "#f97316", "highlight": {"background": "#fdba74", "border": "#fb923c"}, "hover": {"background": "#fdba74", "border": "#fb923c"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "fct", "model": "fct_reviews", "column": "review_id"}, {"id": 64, "label": "fct_reviews\n.listing_id", "title": "<b>fct_reviews</b><br/><code>listing_id</code><br/><i>Layer: fct</i>", "group": "fct", "color": {"background": "#fb923c", "border": "#f97316", "highlight": {"background": "#fdba74", "border": "#fb923c"}, "hover": {"background": "#fdba74", "border": "#fb923c"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "fct", "model": "fct_reviews", "column": "listing_id"}, {"id": 65, "label": "fct_reviews\n.review_date", "title": "<b>fct_reviews</b><br/><code>review_date</code><br/><i>Layer: fct</i>", "group": "fct", "color": {"background": "#fb923c", "border": "#f97316", "highlight": {"background": "#fdba74", "border": "#fb923c"}, "hover": {"background": "#fdba74", "border": "#fb923c"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "fct", "model": "fct_reviews", "column": "review_date"}, {"id": 66, "label": "fct_reviews\n.reviewer_name", "title": "<b>fct_reviews</b><br/><code>reviewer_name</code><br/><i>Layer: fct</i>", "group": "fct", "color": {"background": "#fb923c", "border": "#f97316", "highlight": {"background": "#fdba74", "border": "#fb923c"}, "hover": {"background": "#fdba74", "border": "#fb923c"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "fct", "model": "fct_reviews", "column": "reviewer_name"}, {"id": 67, "label": "fct_reviews\n.review_text", "title": "<b>fct_reviews</b><br/><code>review_text</code><br/><i>Layer: fct</i>", "group": "fct", "color": {"background": "#fb923c", "border": "#f97316", "highlight": {"background": "#fdba74", "border": "#fb923c"}, "hover": {"background": "#fdba74", "border": "#fb923c"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "fct", "model": "fct_reviews", "column": "review_text"}, {"id": 68, "label": "fct_reviews\n.review_sentiment", "title": "<b>fct_reviews</b><br/><code>review_sentiment</code><br/><i>Layer: fct</i>", "group": "fct", "color": {"background": "#fb923c", "border": "#f97316", "highlight": {"background": "#fdba74", "border": "#fb923c"}, "hover": {"background": "#fdba74", "border": "#fb923c"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "fct", "model": "fct_reviews", "column": "review_sentiment"}, {"id": 69, "label": "fct_reviews\n.is_lycanthrope", "title": "<b>fct_reviews</b><br/><code>is_lycanthrope</code><br/><i>Layer: fct</i>", "group": "fct", "color": {"background": "#fb923c", "border": "#f97316", "highlight": {"background": "#fdba74", "border": "#fb923c"}, "hover": {"background": "#fdba74", "border": "#fb923c"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "fct", "model": "fct_reviews", "column": "is_lycanthrope"}, {"id": 70, "label": "mart_fullmoon_reviews\n.review_id", "title": "<b>mart_fullmoon_reviews</b><br/><code>review_id</code><br/><i>Layer: mart</i>", "group": "mart", "color": {"background": "#c084fc", "border": "#a855f7", "highlight": {"background": "#d8b4fe", "border": "#c084fc"}, "hover": {"background": "#d8b4fe", "border": "#c084fc"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "mart", "model": "mart_fullmoon_reviews", "column": "review_id"}, {"id": 71, "label": "mart_fullmoon_reviews\n.listing_id", "title": "<b>mart_fullmoon_reviews</b><br/><code>listing_id</code><br/><i>Layer: mart</i>", "group": "mart", "color": {"background": "#c084fc", "border": "#a855f7", "highlight": {"background": "#d8b4fe", "border": "#c084fc"}, "hover": {"background": "#d8b4fe", "border": "#c084fc"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "mart", "model": "mart_fullmoon_reviews", "column": "listing_id"}, {"id": 72, "label": "mart_fullmoon_reviews\n.review_date", "title": "<b>mart_fullmoon_reviews</b><br/><code>review_date</code><br/><i>Layer: mart</i>", "group": "mart", "color": {"background": "#c084fc", "border": "#a855f7", "highlight": {"background": "#d8b4fe", "border": "#c084fc"}, "hover": {"background": "#d8b4fe", "border": "#c084fc"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "mart", "model": "mart_fullmoon_reviews", "column": "review_date"}, {"id": 73, "label": "mart_fullmoon_reviews\n.reviewer_name", "title": "<b>mart_fullmoon_reviews</b><br/><code>reviewer_name</code><br/><i>Layer: mart</i>", "group": "mart", "color": {"background": "#c084fc", "border": "#a855f7", "highlight": {"background": "#d8b4fe", "border": "#c084fc"}, "hover": {"background": "#d8b4fe", "border": "#c084fc"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "mart", "model": "mart_fullmoon_reviews", "column": "reviewer_name"}, {"id": 74, "label": "mart_fullmoon_reviews\n.review_text", "title": "<b>mart_fullmoon_reviews</b><br/><code>review_text</code><br/><i>Layer: mart</i>", "group": "mart", "color": {"background": "#c084fc", "border": "#a855f7", "highlight": {"background": "#d8b4fe", "border": "#c084fc"}, "hover": {"background": "#d8b4fe", "border": "#c084fc"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "mart", "model": "mart_fullmoon_reviews", "column": "review_text"}, {"id": 75, "label": "mart_fullmoon_reviews\n.review_sentiment", "title": "<b>mart_fullmoon_reviews</b><br/><code>review_sentiment</code><br/><i>Layer: mart</i>", "group": "mart", "color": {"background": "#c084fc", "border": "#a855f7", "highlight": {"background": "#d8b4fe", "border": "#c084fc"}, "hover": {"background": "#d8b4fe", "border": "#c084fc"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "mart", "model": "mart_fullmoon_reviews", "column": "review_sentiment"}, {"id": 76, "label": "mart_fullmoon_reviews\n.is_lycanthrope", "title": "<b>mart_fullmoon_reviews</b><br/><code>is_lycanthrope</code><br/><i>Layer: mart</i>", "group": "mart", "color": {"background": "#c084fc", "border": "#a855f7", "highlight": {"background": "#d8b4fe", "border": "#c084fc"}, "hover": {"background": "#d8b4fe", "border": "#c084fc"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "mart", "model": "mart_fullmoon_reviews", "column": "is_lycanthrope"}, {"id": 77, "label": "mart_fullmoon_reviews\n.is_full_moon", "title": "<b>mart_fullmoon_reviews</b><br/><code>is_full_moon</code><br/><i>Layer: mart</i>", "group": "mart", "color": {"background": "#c084fc", "border": "#a855f7", "highlight": {"background": "#d8b4fe", "border": "#c084fc"}, "hover": {"background": "#d8b4fe", "border": "#c084fc"}}, "font": {"color": "#1e293b", "size": 11, "face": "monospace"}, "shape": "box", "margin": 6, "layer": "mart", "model": "mart_fullmoon_reviews", "column": "is_full_moon"}];
+const edgesData = [{"id": 1, "from": 1, "to": 20, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 2, "from": 2, "to": 21, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 3, "from": 3, "to": 22, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 4, "from": 4, "to": 23, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 5, "from": 5, "to": 24, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 6, "from": 6, "to": 25, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 7, "from": 7, "to": 26, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 8, "from": 8, "to": 27, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 9, "from": 9, "to": 28, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 10, "from": 10, "to": 29, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 11, "from": 11, "to": 30, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 12, "from": 12, "to": 31, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 13, "from": 13, "to": 32, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 14, "from": 14, "to": 33, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 15, "from": 15, "to": 34, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 16, "from": 16, "to": 35, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 17, "from": 17, "to": 36, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 18, "from": 18, "to": 37, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 19, "from": 19, "to": 38, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 20, "from": 20, "to": 40, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 21, "from": 21, "to": 41, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 22, "from": 22, "to": 42, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 23, "from": 23, "to": 43, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 24, "from": 24, "to": 44, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 25, "from": 25, "to": 45, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 26, "from": 26, "to": 46, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 27, "from": 28, "to": 47, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 28, "from": 29, "to": 48, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 29, "from": 30, "to": 49, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 30, "from": 31, "to": 50, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 31, "from": 32, "to": 51, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 32, "from": 33, "to": 52, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 33, "from": 45, "to": 53, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 34, "from": 46, "to": 54, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 35, "from": 47, "to": 55, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 36, "from": 48, "to": 56, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 37, "from": 50, "to": 57, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 38, "from": 49, "to": 58, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 39, "from": 41, "to": 59, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 40, "from": 42, "to": 60, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 41, "from": 51, "to": 61, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 42, "from": 52, "to": 62, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 43, "from": 44, "to": 62, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 44, "from": 34, "to": 64, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 45, "from": 35, "to": 65, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 46, "from": 36, "to": 66, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 47, "from": 37, "to": 67, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 48, "from": 38, "to": 68, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 49, "from": 39, "to": 69, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 50, "from": 63, "to": 70, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 51, "from": 64, "to": 71, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 52, "from": 65, "to": 72, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 53, "from": 66, "to": 73, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 54, "from": 67, "to": 74, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 55, "from": 68, "to": 75, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}, {"id": 56, "from": 69, "to": 76, "arrows": "to", "color": {"color": "#475569", "highlight": "#f8fafc", "hover": "#94a3b8"}, "width": 1.5, "smooth": {"type": "cubicBezier", "forceDirection": "horizontal", "roundness": 0.4}}];
+
+// Build adjacency lookups
+const edgeFrom = {};  // nodeId -> [nodeId, ...]  (outgoing)
+const edgeTo   = {};  // nodeId -> [nodeId, ...]  (incoming)
+edgesData.forEach(e => {
+  if (!edgeFrom[e.from]) edgeFrom[e.from] = [];
+  edgeFrom[e.from].push(e.to);
+  if (!edgeTo[e.to]) edgeTo[e.to] = [];
+  edgeTo[e.to].push(e.from);
+});
+
+// ---- vis.js setup ----
+const container = document.getElementById('network');
+const nodes = new vis.DataSet(nodesData);
+const edges = new vis.DataSet(edgesData);
+
+const options = {
+  layout: {
+    hierarchical: {
+      enabled: true,
+      direction: 'LR',
+      sortMethod: 'directed',
+      levelSeparation: 240,
+      nodeSpacing: 38,
+      treeSpacing: 80,
+      blockShifting: true,
+      edgeMinimization: true,
+      parentCentralization: true,
+    }
+  },
+  physics: {
+    enabled: false,
+    hierarchicalRepulsion: {
+      nodeDistance: 120,
+      springLength: 100,
+    }
+  },
+  interaction: {
+    hover: true,
+    tooltipDelay: 150,
+    navigationButtons: false,
+    keyboard: false,
+    zoomView: true,
+    dragView: true,
+  },
+  nodes: {
+    borderWidth: 1.5,
+    shadow: { enabled: true, color: 'rgba(0,0,0,0.4)', size: 6, x: 2, y: 2 },
+  },
+  edges: {
+    arrows: { to: { enabled: true, scaleFactor: 0.7 } },
+    smooth: { type: 'cubicBezier', forceDirection: 'horizontal', roundness: 0.4 },
+    color: { color: '#475569', highlight: '#f1f5f9', hover: '#94a3b8' },
+    width: 1.5,
+  },
+};
+
+const network = new vis.Network(container, { nodes, edges }, options);
+
+// Fit after stabilisation
+network.once('stabilized', () => {
+  network.fit({ animation: { duration: 600, easingFunction: 'easeInOutQuad' } });
+});
+
+// Zoom level display
+network.on('zoom', () => {
+  document.getElementById('zoomLevel').textContent =
+    'Zoom: ' + (network.getScale() * 100).toFixed(0) + '%';
+});
+
+// ---- Highlight on click ----
+let selectedNode = null;
+const DIM_OPACITY = 0.12;
+
+function resetHighlight() {
+  selectedNode = null;
+  nodes.forEach(n => {
+    nodes.update({ id: n.id, opacity: 1.0 });
+  });
+  edges.forEach(e => {
+    edges.update({ id: e.id, opacity: 1.0, width: 1.5, color: { color: '#475569', highlight: '#f1f5f9', hover: '#94a3b8' } });
+  });
+  document.getElementById('statusMsg').textContent =
+    'Ready — click a node to highlight its lineage path';
+}
+
+network.on('click', params => {
+  if (params.nodes.length === 0) {
+    resetHighlight();
+    return;
+  }
+  const clickedId = params.nodes[0];
+  if (selectedNode === clickedId) {
+    resetHighlight();
+    return;
+  }
+  selectedNode = clickedId;
+  highlightNode(clickedId);
+});
+
+function highlightNode(nodeId) {
+  // Collect directly connected nodes and edges
+  const connectedNodes = new Set([nodeId]);
+  const connectedEdges = new Set();
+
+  edgesData.forEach(e => {
+    if (e.from === nodeId || e.to === nodeId) {
+      connectedNodes.add(e.from);
+      connectedNodes.add(e.to);
+      connectedEdges.add(e.id);
+    }
+  });
+
+  nodes.forEach(n => {
+    nodes.update({ id: n.id, opacity: connectedNodes.has(n.id) ? 1.0 : DIM_OPACITY });
+  });
+  edges.forEach(e => {
+    const active = connectedEdges.has(e.id);
+    edges.update({
+      id: e.id,
+      opacity: active ? 1.0 : 0.05,
+      width: active ? 2.5 : 1,
+      color: active
+        ? { color: '#f8fafc', highlight: '#f8fafc', hover: '#f8fafc' }
+        : { color: '#1e293b', highlight: '#1e293b', hover: '#1e293b' },
+    });
+  });
+
+  const nd = nodesData.find(n => n.id === nodeId);
+  const upCount   = (edgeTo[nodeId]   || []).length;
+  const downCount = (edgeFrom[nodeId] || []).length;
+  document.getElementById('statusMsg').textContent =
+    `Selected: ${nd.model}.${nd.column}  |  ${upCount} upstream  ·  ${downCount} downstream`;
+}
+
+// ---- Search / filter ----
+let activeLayerFilter = null;
+
+function onSearch() {
+  const q = document.getElementById('searchBox').value.trim().toLowerCase();
+  if (!q) {
+    clearSearch();
+    return;
+  }
+  let count = 0;
+  const matched = new Set();
+  nodesData.forEach(n => {
+    const key = (n.model + '.' + n.column).toLowerCase();
+    if (key.includes(q)) {
+      matched.add(n.id);
+      count++;
+    }
+  });
+  nodes.forEach(n => {
+    nodes.update({ id: n.id, opacity: matched.has(n.id) ? 1.0 : DIM_OPACITY });
+  });
+  edges.forEach(e => {
+    edges.update({ id: e.id, opacity: (matched.has(e.from) || matched.has(e.to)) ? 0.7 : 0.05 });
+  });
+  document.getElementById('matchCount').textContent = count + ' match' + (count !== 1 ? 'es' : '');
+
+  // Zoom to matched
+  if (matched.size > 0) {
+    network.fit({
+      nodes: [...matched],
+      animation: { duration: 400, easingFunction: 'easeInOutQuad' },
+    });
+  }
+}
+
+function clearSearch() {
+  document.getElementById('searchBox').value = '';
+  document.getElementById('matchCount').textContent = '';
+  activeLayerFilter ? applyLayerFilter(activeLayerFilter) : resetHighlight();
+}
+
+// ---- Layer filter (legend click) ----
+function filterLayer(el) {
+  const layer = el.dataset.layer;
+  if (activeLayerFilter === layer) {
+    // Toggle off
+    activeLayerFilter = null;
+    document.querySelectorAll('.legend-item').forEach(i => i.classList.remove('active'));
+    resetHighlight();
+    return;
+  }
+  activeLayerFilter = layer;
+  document.querySelectorAll('.legend-item').forEach(i => {
+    i.classList.toggle('active', i.dataset.layer === layer);
+  });
+  applyLayerFilter(layer);
+}
+
+function applyLayerFilter(layer) {
+  const inLayer = new Set();
+  nodesData.forEach(n => { if (n.layer === layer) inLayer.add(n.id); });
+  nodes.forEach(n => {
+    nodes.update({ id: n.id, opacity: inLayer.has(n.id) ? 1.0 : DIM_OPACITY });
+  });
+  edges.forEach(e => {
+    edges.update({ id: e.id, opacity: (inLayer.has(e.from) || inLayer.has(e.to)) ? 0.6 : 0.05 });
+  });
+}
+
+// ---- Physics toggle ----
+let physicsOn = false;
+function togglePhysics() {
+  physicsOn = !physicsOn;
+  network.setOptions({ physics: { enabled: physicsOn } });
+  document.getElementById('togglePhysicsBtn').textContent =
+    'Physics: ' + (physicsOn ? 'On' : 'Off');
+}
+
+// ---- Export PNG ----
+function exportPNG() {
+  const canvas = container.querySelector('canvas');
+  if (!canvas) return;
+  const link = document.createElement('a');
+  link.download = 'airbnb_column_lineage.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+// Keyboard shortcut: Escape to reset
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    clearSearch();
+    resetHighlight();
+  }
+});
+</script>
+</body>
+</html>

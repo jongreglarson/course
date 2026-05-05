@@ -6,6 +6,7 @@ on:
     paths:
       - "airbnb/docs/**"
       - "airbnb/edr_target/elementary_report.html"
+      - "airbnb/generate_lineage.py"
   workflow_dispatch:
 
 permissions:
@@ -27,9 +28,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Generate column-level lineage visualization
+        run: python airbnb/generate_lineage.py
+
       - name: Build site
         run: |
-          mkdir -p _site/original _site/upscaled/assets _site/edr _site/upscaled-hub
+          mkdir -p _site/original _site/upscaled/assets _site/edr _site/upscaled-hub _site/lineage
 
           cp airbnb/docs/index.html    _site/original/
           cp airbnb/docs/manifest.json _site/original/
@@ -42,6 +46,7 @@ jobs:
           cp -r airbnb/docs/upscaled/assets/    _site/upscaled/assets/
 
           cp airbnb/edr_target/elementary_report.html _site/edr/index.html
+          cp airbnb/docs/column_lineage.html _site/lineage/index.html
 
           cat > _site/upscaled-hub/index.html << 'HUBPAGE'
           <!DOCTYPE html>
@@ -137,8 +142,8 @@ jobs:
               h1 { font-size: 2.25rem; font-weight: 700; line-height: 1.2; margin-bottom: 0.75rem; }
               h1 span { color: #38bdf8; }
               .subtitle { color: #94a3b8; font-size: 1rem; line-height: 1.6; margin-bottom: 3rem; max-width: 480px; margin-left: auto; margin-right: auto; }
-              .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; }
-              @media (max-width: 520px) { .cards { grid-template-columns: 1fr; } }
+              .cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; }
+              @media (max-width: 640px) { .cards { grid-template-columns: 1fr; } }
               .card {
                 background: #1e293b;
                 border: 1px solid #334155;
@@ -166,6 +171,7 @@ jobs:
               .tag-course { background: #1e3a5f; color: #7dd3fc; }
               .tag-ai { background: #1a2e1a; color: #86efac; }
               .tag-edr { background: #2d1f3d; color: #c4b5fd; }
+              .tag-lineage { background: #1a1f2e; color: #fb923c; }
               .stack {
                 display: flex;
                 flex-wrap: wrap;
@@ -205,6 +211,12 @@ jobs:
                   <h2>Upscaled Project</h2>
                   <p>AI-enhanced version with full documentation, expanded testing, orchestration, and downstream delivery.</p>
                   <span class="tag tag-ai">AI Enhanced</span>
+                </a>
+                <a class="card" href="lineage/">
+                  <div class="card-icon">🔗</div>
+                  <h2>Column Lineage</h2>
+                  <p>Interactive column-level data lineage graph — trace any field from raw source to final mart.</p>
+                  <span class="tag tag-lineage">Open Source</span>
                 </a>
               </div>
 
