@@ -346,6 +346,7 @@ HTML_TEMPLATE = """\
     /* ---- Graph ---- */
     #network {
       flex: 1;
+      min-height: 0;
       background: #0f172a;
       position: relative;
     }
@@ -480,8 +481,8 @@ const options = {
 
 const network = new vis.Network(container, { nodes, edges }, options);
 
-// Fit after stabilisation
-network.once('stabilized', () => {
+// Fit once after first draw (stabilized never fires when physics is off)
+network.once('afterDrawing', () => {
   network.fit({ animation: { duration: 600, easingFunction: 'easeInOutQuad' } });
 });
 
