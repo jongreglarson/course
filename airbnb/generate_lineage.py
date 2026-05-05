@@ -148,7 +148,6 @@ def build_vis_data():
                 "id": current_id,
                 "label": f"{model}\n.{col}",
                 "title": f"<b>{model}</b><br/><code>{col}</code><br/><i>Layer: {layer}</i>",
-                "group": layer,
                 "color": {
                     "background": colors["background"],
                     "border": colors["border"],
@@ -557,10 +556,14 @@ function bfsDownstream(nodeId) {
 let selectedNode = null;
 const DIM_OPACITY = 0.1;
 
+// Original colors keyed by node id for restoration after highlight
+const originalColors = {};
+nodesData.forEach(n => { originalColors[n.id] = n.color; });
+
 function resetHighlight() {
   selectedNode = null;
   document.getElementById('traceSelect').value = '';
-  nodes.forEach(n => nodes.update({ id: n.id, opacity: 1.0, color: undefined }));
+  nodes.forEach(n => nodes.update({ id: n.id, opacity: 1.0, color: originalColors[n.id] }));
   edges.forEach(e => edges.update({
     id: e.id, opacity: 1.0, width: 1.5,
     color: { color: '#475569', highlight: '#f1f5f9', hover: '#94a3b8' }
