@@ -792,25 +792,23 @@ function openPanel(nd) {
     if (f) summaryEl.innerHTML += `<span class="test-badge fail">✗ ${f}</span>`;
   }
 
-  // All model tests — highlight rows that match the clicked column
+  // Only show tests for the clicked column
   const listEl = document.getElementById('testResultsList');
   listEl.innerHTML = '';
-  const allTests = nd.tests || [];
+  const colTests = (nd.tests || []).filter(t => t.column === nd.column);
   const ICONS = { pass: { sym: '✓', cls: 'pass' }, warn: { sym: '⚠', cls: 'warn' }, fail: { sym: '✗', cls: 'fail' }, error: { sym: '✗', cls: 'fail' } };
-  allTests.forEach(t => {
+  colTests.forEach(t => {
     const ic = ICONS[t.status] || { sym: '?', cls: 'warn' };
-    const isThisCol = t.column === nd.column;
     const row = document.createElement('div');
-    row.className = 'test-row' + (isThisCol ? ' this-col' : ' other-col');
+    row.className = 'test-row';
     row.innerHTML = `<span class="test-icon ${ic.cls}">${ic.sym}</span>` +
-                    `<span class="test-type">${t.type}</span>` +
-                    `<span class="test-col">${t.column || ''}</span>`;
+                    `<span class="test-type">${t.type}</span>`;
     listEl.appendChild(row);
   });
 
   const noTestsEl = document.getElementById('noTests');
-  noTestsEl.style.display = total ? 'none' : '';
-  noTestsEl.textContent = 'No tests recorded for this model';
+  noTestsEl.style.display = colTests.length === 0 ? '' : 'none';
+  noTestsEl.textContent = 'No tests on this column';
 
   const docsUrl = `../original/#!/model/model.airbnb.${nd.model}`;
   document.getElementById('linkDbtDocs').href = docsUrl;
