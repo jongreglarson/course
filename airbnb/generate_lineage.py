@@ -606,14 +606,6 @@ HTML_TEMPLATE = """\
 </div>
 
 <script>
-// Size the canvas explicitly so vis.js gets a non-zero container height
-function sizeCanvas() {
-  const header  = document.querySelector('header').offsetHeight;
-  const toolbar = document.querySelector('.toolbar').offsetHeight;
-  const status  = document.getElementById('statusBar').offsetHeight;
-  document.getElementById('network').style.height =
-    (window.innerHeight - header - toolbar - status) + 'px';
-}
 function sizeAll() {
   const headerH  = document.querySelector('header').offsetHeight;
   const toolbarH = document.querySelector('.toolbar').offsetHeight;
