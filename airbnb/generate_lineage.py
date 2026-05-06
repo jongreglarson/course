@@ -134,12 +134,12 @@ EDGES = [
 # ---------------------------------------------------------------------------
 
 def load_test_summary(script_dir):
-    """Returns {model: {pass, warn, fail}} from run_results or cached summary."""
+    """Returns {model: {pass, warn, fail, tests:[{type,column,status}]}}."""
     run_results_path = os.path.join(script_dir, "target", "run_results.json")
     manifest_path    = os.path.join(script_dir, "docs",   "manifest.json")
     summary_path     = os.path.join(script_dir, "docs",   "test_summary.json")
 
-    counts = {}
+    data = {}
 
     if os.path.exists(run_results_path) and os.path.exists(manifest_path):
         with open(run_results_path, encoding="utf-8") as f:
@@ -153,30 +153,39 @@ def load_test_summary(script_dir):
             if not uid.startswith("test."):
                 continue
             node = manifest.get("nodes", {}).get(uid, {})
+            meta = node.get("test_metadata") or {}
+            test_type   = meta.get("name") or node.get("name", uid.split(".")[-1])
+            test_column = (meta.get("kwargs") or {}).get("column_name", "")
+
             for dep in node.get("depends_on", {}).get("nodes", []):
                 if dep.startswith("model."):
                     model = dep.split(".")[-1]
-                    if model not in counts:
-                        counts[model] = {"pass": 0, "warn": 0, "fail": 0}
+                    if model not in data:
+                        data[model] = {"pass": 0, "warn": 0, "fail": 0, "tests": []}
                     if status == "pass":
-                        counts[model]["pass"] += 1
+                        data[model]["pass"] += 1
                     elif status == "warn":
-                        counts[model]["warn"] += 1
+                        data[model]["warn"] += 1
                     elif status in ("fail", "error"):
-                        counts[model]["fail"] += 1
+                        data[model]["fail"] += 1
+                    data[model]["tests"].append({
+                        "type":   test_type,
+                        "column": test_column,
+                        "status": status,
+                    })
 
         with open(summary_path, "w", encoding="utf-8") as f:
-            json.dump(counts, f, indent=2)
+            json.dump(data, f, indent=2)
         print(f"  Test summary written: {summary_path}")
 
     elif os.path.exists(summary_path):
         with open(summary_path, encoding="utf-8") as f:
-            counts = json.load(f)
+            data = json.load(f)
         print("  Test summary loaded from docs/test_summary.json")
     else:
         print("  No test data found — badges will be hidden")
 
-    return counts
+    return data
 
 # ---------------------------------------------------------------------------
 # 3. Build vis.js node/edge data structures
@@ -219,6 +228,7 @@ def build_vis_data(test_summary):
                 "tests_pass": tc.get("pass", 0),
                 "tests_warn": tc.get("warn", 0),
                 "tests_fail": tc.get("fail", 0),
+                "tests": tc.get("tests", []),
             })
             current_id += 1
 
@@ -487,6 +497,18 @@ HTML_TEMPLATE = """\
     }
     .info-link:hover { background: #475569; color: #f1f5f9; }
     .info-no-tests { font-size: 11px; color: #475569; font-style: italic; }
+    .test-row {
+      display: flex; align-items: center; gap: 6px;
+      padding: 4px 0; border-bottom: 1px solid #1e3a5f;
+      font-size: 11px; font-family: monospace;
+    }
+    .test-row:last-child { border-bottom: none; }
+    .test-icon { font-size: 12px; flex-shrink: 0; width: 14px; }
+    .test-icon.pass { color: #86efac; }
+    .test-icon.warn { color: #fed7aa; }
+    .test-icon.fail { color: #fca5a5; }
+    .test-type   { color: #94a3b8; flex-shrink: 0; }
+    .test-col    { color: #f1f5f9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     /* ---- Mobile ---- */
     @media (max-width: 640px) {
@@ -588,15 +610,15 @@ HTML_TEMPLATE = """\
   <div class="info-column" id="infoColumn"></div>
   <span class="info-layer-badge" id="infoLayerBadge"></span>
   <div class="info-tests">
-    <div class="info-tests-label">Model tests (last run)</div>
-    <span class="test-badge pass" id="badgePass"></span>
-    <span class="test-badge warn" id="badgeWarn"></span>
-    <span class="test-badge fail" id="badgeFail"></span>
+    <div class="info-tests-label">
+      Model tests (last run)
+      <span style="float:right;display:flex;gap:5px" id="testSummaryBadges"></span>
+    </div>
+    <div id="testResultsList"></div>
     <div class="info-no-tests" id="noTests" style="display:none">No tests recorded for this model</div>
   </div>
   <div class="info-links">
     <a class="info-link" id="linkDbtDocs" href="#" target="_blank">📖 View in dbt Docs</a>
-    <a class="info-link" href="../edr/" target="_blank">🔬 Test Results (Elementary)</a>
   </div>
 </div>
 
@@ -758,13 +780,32 @@ function openPanel(nd) {
 
   const p = nd.tests_pass || 0, w = nd.tests_warn || 0, f = nd.tests_fail || 0;
   const total = p + w + f;
-  document.getElementById('badgePass').textContent = `✓ ${p} passed`;
-  document.getElementById('badgeWarn').textContent = `⚠ ${w} warned`;
-  document.getElementById('badgeFail').textContent = `✗ ${f} failed`;
-  document.getElementById('badgePass').style.display = total ? '' : 'none';
-  document.getElementById('badgeWarn').style.display = (total && w > 0) ? '' : 'none';
-  document.getElementById('badgeFail').style.display = (total && f > 0) ? '' : 'none';
-  document.getElementById('noTests').style.display   = total ? 'none' : '';
+
+  // Summary badges
+  const summaryEl = document.getElementById('testSummaryBadges');
+  summaryEl.innerHTML = '';
+  if (total) {
+    if (p) summaryEl.innerHTML += `<span class="test-badge pass">✓ ${p}</span>`;
+    if (w) summaryEl.innerHTML += `<span class="test-badge warn">⚠ ${w}</span>`;
+    if (f) summaryEl.innerHTML += `<span class="test-badge fail">✗ ${f}</span>`;
+  }
+
+  // Individual test rows
+  const listEl = document.getElementById('testResultsList');
+  listEl.innerHTML = '';
+  const tests = nd.tests || [];
+  const ICONS = { pass: { sym: '✓', cls: 'pass' }, warn: { sym: '⚠', cls: 'warn' }, fail: { sym: '✗', cls: 'fail' }, error: { sym: '✗', cls: 'fail' } };
+  tests.forEach(t => {
+    const ic = ICONS[t.status] || { sym: '?', cls: 'warn' };
+    const row = document.createElement('div');
+    row.className = 'test-row';
+    row.innerHTML = `<span class="test-icon ${ic.cls}">${ic.sym}</span>` +
+                    `<span class="test-type">${t.type}</span>` +
+                    `<span class="test-col">${t.column || ''}</span>`;
+    listEl.appendChild(row);
+  });
+
+  document.getElementById('noTests').style.display = total ? 'none' : '';
 
   const docsUrl = `../original/#!/model/model.airbnb.${nd.model}`;
   document.getElementById('linkDbtDocs').href = docsUrl;

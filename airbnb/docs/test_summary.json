@@ -2,16 +2,62 @@
   "dim_hosts_cleansed": {
     "pass": 3,
     "warn": 0,
-    "fail": 0
+    "fail": 0,
+    "tests": [
+      {
+        "type": "not_null",
+        "column": "host_id",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "host_name",
+        "status": "pass"
+      },
+      {
+        "type": "unique",
+        "column": "host_id",
+        "status": "pass"
+      }
+    ]
   },
   "dim_listings_cleansed": {
     "pass": 4,
     "warn": 0,
-    "fail": 0
+    "fail": 0,
+    "tests": [
+      {
+        "type": "not_null",
+        "column": "host_id",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "listing_id",
+        "status": "pass"
+      },
+      {
+        "type": "positive_values",
+        "column": "minimum_nights",
+        "status": "pass"
+      },
+      {
+        "type": "unique",
+        "column": "listing_id",
+        "status": "pass"
+      }
+    ]
   },
   "fct_reviews": {
     "pass": 1,
     "warn": 0,
-    "fail": 0
+    "fail": 0,
+    "tests": [
+      {
+        "type": "not_null",
+        "column": "reviewer_name",
+        "status": "pass"
+      }
+    ]
   }
 }
