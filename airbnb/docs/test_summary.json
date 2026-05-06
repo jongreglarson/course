@@ -1,6 +1,6 @@
 {
   "dim_hosts_cleansed": {
-    "pass": 9,
+    "pass": 7,
     "warn": 1,
     "fail": 0,
     "tests": [
@@ -40,16 +40,6 @@
         "status": "pass"
       },
       {
-        "type": "relationships",
-        "column": "host_id",
-        "status": "pass"
-      },
-      {
-        "type": "relationships",
-        "column": "host_id",
-        "status": "pass"
-      },
-      {
         "type": "unique",
         "column": "host_id",
         "status": "pass"
@@ -57,7 +47,7 @@
     ]
   },
   "dim_listings_cleansed": {
-    "pass": 18,
+    "pass": 17,
     "warn": 3,
     "fail": 0,
     "tests": [
@@ -154,11 +144,6 @@
       {
         "type": "relationships",
         "column": "host_id",
-        "status": "pass"
-      },
-      {
-        "type": "relationships",
-        "column": "listing_id",
         "status": "pass"
       },
       {
@@ -276,7 +261,7 @@
     ]
   },
   "fct_reviews": {
-    "pass": 13,
+    "pass": 11,
     "warn": 1,
     "fail": 0,
     "tests": [
@@ -299,11 +284,6 @@
         "type": "expect_column_value_lengths_to_be_between",
         "column": "review_text",
         "status": "warn"
-      },
-      {
-        "type": "expect_table_row_count_to_equal_other_table",
-        "column": "",
-        "status": "pass"
       },
       {
         "type": "not_null",
@@ -333,11 +313,6 @@
       {
         "type": "not_null",
         "column": "reviewer_name",
-        "status": "pass"
-      },
-      {
-        "type": "relationships",
-        "column": "listing_id",
         "status": "pass"
       },
       {

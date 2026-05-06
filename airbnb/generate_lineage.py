@@ -160,22 +160,29 @@ def load_test_summary(script_dir):
             test_type   = meta.get("name") or node.get("name", uid.split(".")[-1])
             test_column = (meta.get("kwargs") or {}).get("column_name", "")
 
-            for dep in node.get("depends_on", {}).get("nodes", []):
-                if dep.startswith("model."):
-                    model = dep.split(".")[-1]
-                    if model not in data:
-                        data[model] = {"pass": 0, "warn": 0, "fail": 0, "tests": []}
-                    if status == "pass":
-                        data[model]["pass"] += 1
-                    elif status == "warn":
-                        data[model]["warn"] += 1
-                    elif status in ("fail", "error"):
-                        data[model]["fail"] += 1
-                    data[model]["tests"].append({
-                        "type":   test_type,
-                        "column": test_column,
-                        "status": status,
-                    })
+            # Use attached_node (primary model) to avoid attributing
+            # relationship tests to the referenced model as well
+            attached = node.get("attached_node", "")
+            if attached and attached.startswith("model."):
+                model_deps = [attached]
+            else:
+                model_deps = [d for d in node.get("depends_on", {}).get("nodes", []) if d.startswith("model.")]
+
+            for dep in model_deps:
+                model = dep.split(".")[-1]
+                if model not in data:
+                    data[model] = {"pass": 0, "warn": 0, "fail": 0, "tests": []}
+                if status == "pass":
+                    data[model]["pass"] += 1
+                elif status == "warn":
+                    data[model]["warn"] += 1
+                elif status in ("fail", "error"):
+                    data[model]["fail"] += 1
+                data[model]["tests"].append({
+                    "type":   test_type,
+                    "column": test_column,
+                    "status": status,
+                })
 
         with open(summary_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
