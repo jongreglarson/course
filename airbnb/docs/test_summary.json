@@ -1,0 +1,17 @@
+{
+  "dim_hosts_cleansed": {
+    "pass": 3,
+    "warn": 0,
+    "fail": 0
+  },
+  "dim_listings_cleansed": {
+    "pass": 4,
+    "warn": 0,
+    "fail": 0
+  },
+  "fct_reviews": {
+    "pass": 1,
+    "warn": 0,
+    "fail": 0
+  }
+}

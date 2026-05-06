@@ -130,17 +130,67 @@ EDGES = [
 ]
 
 # ---------------------------------------------------------------------------
-# 2. Build vis.js node/edge data structures
+# 2. Test summary loader
 # ---------------------------------------------------------------------------
 
-def build_vis_data():
+def load_test_summary(script_dir):
+    """Returns {model: {pass, warn, fail}} from run_results or cached summary."""
+    run_results_path = os.path.join(script_dir, "target", "run_results.json")
+    manifest_path    = os.path.join(script_dir, "docs",   "manifest.json")
+    summary_path     = os.path.join(script_dir, "docs",   "test_summary.json")
+
+    counts = {}
+
+    if os.path.exists(run_results_path) and os.path.exists(manifest_path):
+        with open(run_results_path, encoding="utf-8") as f:
+            run_results = json.load(f)
+        with open(manifest_path, encoding="utf-8") as f:
+            manifest = json.load(f)
+
+        for result in run_results.get("results", []):
+            uid    = result.get("unique_id", "")
+            status = result.get("status", "")
+            if not uid.startswith("test."):
+                continue
+            node = manifest.get("nodes", {}).get(uid, {})
+            for dep in node.get("depends_on", {}).get("nodes", []):
+                if dep.startswith("model."):
+                    model = dep.split(".")[-1]
+                    if model not in counts:
+                        counts[model] = {"pass": 0, "warn": 0, "fail": 0}
+                    if status == "pass":
+                        counts[model]["pass"] += 1
+                    elif status == "warn":
+                        counts[model]["warn"] += 1
+                    elif status in ("fail", "error"):
+                        counts[model]["fail"] += 1
+
+        with open(summary_path, "w", encoding="utf-8") as f:
+            json.dump(counts, f, indent=2)
+        print(f"  Test summary written: {summary_path}")
+
+    elif os.path.exists(summary_path):
+        with open(summary_path, encoding="utf-8") as f:
+            counts = json.load(f)
+        print("  Test summary loaded from docs/test_summary.json")
+    else:
+        print("  No test data found — badges will be hidden")
+
+    return counts
+
+# ---------------------------------------------------------------------------
+# 3. Build vis.js node/edge data structures
+# ---------------------------------------------------------------------------
+
+def build_vis_data(test_summary):
     nodes = []
     node_id_map = {}  # "model.column" -> integer id
     current_id = 1
 
     for model, columns in MODEL_COLUMNS.items():
-        layer = get_layer(model)
+        layer  = get_layer(model)
         colors = LAYER_COLORS[layer]
+        tc     = test_summary.get(model, {})
         for col in columns:
             key = f"{model}.{col}"
             node_id_map[key] = current_id
@@ -166,6 +216,9 @@ def build_vis_data():
                 "layer": layer,
                 "model": model,
                 "column": col,
+                "tests_pass": tc.get("pass", 0),
+                "tests_warn": tc.get("warn", 0),
+                "tests_fail": tc.get("fail", 0),
             })
             current_id += 1
 
@@ -379,6 +432,62 @@ HTML_TEMPLATE = """\
       gap: 20px;
     }
 
+    /* ---- Info panel ---- */
+    #infoPanel {
+      position: absolute;
+      right: 0; top: 0; bottom: 0;
+      width: 260px;
+      background: #1e293b;
+      border-left: 1px solid #334155;
+      padding: 16px;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transform: translateX(100%);
+      transition: transform 0.2s ease;
+      overflow-y: auto;
+    }
+    #infoPanel.open { transform: translateX(0); }
+    .info-close {
+      position: absolute; top: 10px; right: 10px;
+      background: none; border: none; color: #64748b;
+      font-size: 16px; cursor: pointer; line-height: 1;
+    }
+    .info-close:hover { color: #f1f5f9; }
+    .info-model {
+      font-size: 12px; font-weight: 700; color: #f1f5f9;
+      font-family: monospace; word-break: break-all;
+    }
+    .info-column {
+      font-size: 11px; color: #94a3b8; font-family: monospace;
+    }
+    .info-layer-badge {
+      display: inline-block; font-size: 10px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 2px 7px; border-radius: 4px;
+    }
+    .info-tests { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .info-tests-label { font-size: 11px; color: #64748b; width: 100%; }
+    .test-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 12px; font-weight: 700;
+      padding: 3px 9px; border-radius: 5px;
+    }
+    .test-badge.pass { background: #14532d; color: #86efac; }
+    .test-badge.warn { background: #431407; color: #fed7aa; }
+    .test-badge.fail { background: #450a0a; color: #fca5a5; }
+    .info-links { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+    .info-link {
+      display: block; text-align: center;
+      background: #334155; border: 1px solid #475569;
+      border-radius: 6px; padding: 7px 10px;
+      font-size: 12px; color: #cbd5e1; text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+    .info-link:hover { background: #475569; color: #f1f5f9; }
+    .info-no-tests { font-size: 11px; color: #475569; font-style: italic; }
+
     /* ---- Mobile ---- */
     @media (max-width: 640px) {
       header {
@@ -407,6 +516,13 @@ HTML_TEMPLATE = """\
       .toolbar-sep { display: none; }
       .trace-label { display: none; }
       #traceSelect { max-width: 100%; width: 160px; font-size: 11px; }
+      #infoPanel {
+        top: auto; right: 0; left: 0; bottom: 0;
+        width: 100%; max-height: 55%;
+        border-left: none; border-top: 1px solid #334155;
+        transform: translateY(100%);
+      }
+      #infoPanel.open { transform: translateY(0); }
     }
 
     /* ---- Tooltip override (vis uses title attr, we style the vis tooltip) ---- */
@@ -463,7 +579,25 @@ HTML_TEMPLATE = """\
   <button class="toolbar-btn" onclick="clearTrace()">Clear</button>
 </div>
 
-<div id="network"></div>
+<div id="network">
+  <div id="infoPanel">
+    <button class="info-close" onclick="closePanel()">✕</button>
+    <div class="info-model" id="infoModel"></div>
+    <div class="info-column" id="infoColumn"></div>
+    <span class="info-layer-badge" id="infoLayerBadge"></span>
+    <div class="info-tests">
+      <div class="info-tests-label">Model tests (last run)</div>
+      <span class="test-badge pass" id="badgePass"></span>
+      <span class="test-badge warn" id="badgeWarn"></span>
+      <span class="test-badge fail" id="badgeFail"></span>
+      <div class="info-no-tests" id="noTests" style="display:none">No tests recorded</div>
+    </div>
+    <div class="info-links">
+      <a class="info-link" id="linkDbtDocs" href="#" target="_blank">📖 View in dbt Docs</a>
+      <a class="info-link" href="../edr/" target="_blank">🔬 Test Results (Elementary)</a>
+    </div>
+  </div>
+</div>
 
 <div id="statusBar">
   <span id="statusMsg">Ready — click a node to highlight its lineage path</span>
@@ -601,13 +735,48 @@ function resetHighlight() {
     color: { color: '#475569', highlight: '#f1f5f9', hover: '#94a3b8' }
   }));
   document.getElementById('statusMsg').textContent =
-    'Ready — click a node to see neighbors, or use Trace to follow the full lineage';
+    'Click a node to inspect it · Use Trace to follow the full lineage';
+}
+
+// ---- Info panel ----
+const LAYER_LABELS = { raw: 'Sources (raw)', staging: 'Staging', dim: 'Dimensions', fct: 'Facts', mart: 'Marts' };
+const LAYER_COLORS_JS = { raw: '#94a3b8', staging: '#60a5fa', dim: '#34d399', fct: '#fb923c', mart: '#c084fc' };
+
+function openPanel(nd) {
+  document.getElementById('infoModel').textContent  = nd.model;
+  document.getElementById('infoColumn').textContent = '.' + nd.column;
+  const badge = document.getElementById('infoLayerBadge');
+  badge.textContent = LAYER_LABELS[nd.layer] || nd.layer;
+  badge.style.background = LAYER_COLORS_JS[nd.layer] + '22';
+  badge.style.color       = LAYER_COLORS_JS[nd.layer];
+  badge.style.border      = '1px solid ' + LAYER_COLORS_JS[nd.layer] + '55';
+
+  const p = nd.tests_pass || 0, w = nd.tests_warn || 0, f = nd.tests_fail || 0;
+  const total = p + w + f;
+  document.getElementById('badgePass').textContent = `✓ ${p} passed`;
+  document.getElementById('badgeWarn').textContent = `⚠ ${w} warned`;
+  document.getElementById('badgeFail').textContent = `✗ ${f} failed`;
+  document.getElementById('badgePass').style.display = total ? '' : 'none';
+  document.getElementById('badgeWarn').style.display = (total && w > 0) ? '' : 'none';
+  document.getElementById('badgeFail').style.display = (total && f > 0) ? '' : 'none';
+  document.getElementById('noTests').style.display   = total ? 'none' : '';
+
+  const docsUrl = `../original/#!/model/model.airbnb.${nd.model}`;
+  document.getElementById('linkDbtDocs').href = docsUrl;
+
+  document.getElementById('infoPanel').classList.add('open');
+  sizeCanvas();
+}
+
+function closePanel() {
+  document.getElementById('infoPanel').classList.remove('open');
+  sizeCanvas();
 }
 
 network.on('click', params => {
-  if (params.nodes.length === 0) { resetHighlight(); return; }
+  if (params.nodes.length === 0) { closePanel(); resetHighlight(); return; }
   const clickedId = params.nodes[0];
-  if (selectedNode === clickedId) { resetHighlight(); return; }
+  if (selectedNode === clickedId) { closePanel(); resetHighlight(); return; }
   selectedNode = clickedId;
 
   const connectedNodes = new Set([clickedId]);
@@ -633,9 +802,9 @@ network.on('click', params => {
   const upCount   = (edgeTo[clickedId]   || []).length;
   const downCount = (edgeFrom[clickedId] || []).length;
   document.getElementById('statusMsg').textContent =
-    `Selected: ${nd.model}.${nd.column}  |  ${upCount} direct upstream  ·  ${downCount} direct downstream  (use Trace for full path)`;
-}
-);
+    `${nd.model}.${nd.column}  ·  ${upCount} upstream  ·  ${downCount} downstream`;
+  openPanel(nd);
+});
 
 // ---- Full lineage trace ----
 function traceFullLineage(nodeId) {
@@ -835,7 +1004,8 @@ def main():
 
     output_path = os.path.join(docs_dir, "column_lineage.html")
 
-    nodes, edges, _ = build_vis_data()
+    test_summary = load_test_summary(script_dir)
+    nodes, edges, _ = build_vis_data(test_summary)
     html = generate_html(nodes, edges)
 
     with open(output_path, "w", encoding="utf-8") as f:
