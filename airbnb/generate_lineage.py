@@ -509,6 +509,8 @@ HTML_TEMPLATE = """\
     .test-icon.fail { color: #fca5a5; }
     .test-type   { color: #94a3b8; flex-shrink: 0; }
     .test-col    { color: #f1f5f9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .test-row.this-col { background: #1e3a5f22; border-radius: 4px; padding-left: 4px; }
+    .test-row.other-col { opacity: 0.45; }
 
     /* ---- Mobile ---- */
     @media (max-width: 640px) {
@@ -790,30 +792,25 @@ function openPanel(nd) {
     if (f) summaryEl.innerHTML += `<span class="test-badge fail">✗ ${f}</span>`;
   }
 
-  // Individual test rows — filtered to this column only
+  // All model tests — highlight rows that match the clicked column
   const listEl = document.getElementById('testResultsList');
   listEl.innerHTML = '';
-  const allTests   = nd.tests || [];
-  const colTests   = allTests.filter(t => t.column === nd.column);
+  const allTests = nd.tests || [];
   const ICONS = { pass: { sym: '✓', cls: 'pass' }, warn: { sym: '⚠', cls: 'warn' }, fail: { sym: '✗', cls: 'fail' }, error: { sym: '✗', cls: 'fail' } };
-  colTests.forEach(t => {
+  allTests.forEach(t => {
     const ic = ICONS[t.status] || { sym: '?', cls: 'warn' };
+    const isThisCol = t.column === nd.column;
     const row = document.createElement('div');
-    row.className = 'test-row';
+    row.className = 'test-row' + (isThisCol ? ' this-col' : ' other-col');
     row.innerHTML = `<span class="test-icon ${ic.cls}">${ic.sym}</span>` +
-                    `<span class="test-type">${t.type}</span>`;
+                    `<span class="test-type">${t.type}</span>` +
+                    `<span class="test-col">${t.column || ''}</span>`;
     listEl.appendChild(row);
   });
 
   const noTestsEl = document.getElementById('noTests');
-  if (colTests.length === 0) {
-    noTestsEl.style.display = '';
-    noTestsEl.textContent = total
-      ? 'No tests on this column (model has ' + total + ' total)'
-      : 'No tests recorded for this model';
-  } else {
-    noTestsEl.style.display = 'none';
-  }
+  noTestsEl.style.display = total ? 'none' : '';
+  noTestsEl.textContent = 'No tests recorded for this model';
 
   const docsUrl = `../original/#!/model/model.airbnb.${nd.model}`;
   document.getElementById('linkDbtDocs').href = docsUrl;
