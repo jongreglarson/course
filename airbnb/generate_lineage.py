@@ -207,18 +207,51 @@ def load_test_summary(script_dir):
     return data
 
 # ---------------------------------------------------------------------------
+# 2b. Column description loader
+# ---------------------------------------------------------------------------
+
+def load_column_descriptions(script_dir):
+    """Returns {model: {column: description}} from manifest, lowercase column keys."""
+    import re
+    target_manifest = os.path.join(script_dir, "target", "manifest.json")
+    docs_manifest   = os.path.join(script_dir, "docs",   "manifest.json")
+    manifest_path   = target_manifest if os.path.exists(target_manifest) else docs_manifest
+
+    descriptions = {}
+    if not os.path.exists(manifest_path):
+        return descriptions
+
+    with open(manifest_path, encoding="utf-8") as f:
+        manifest = json.load(f)
+
+    for uid, node in manifest.get("nodes", {}).items():
+        if not uid.startswith("model."):
+            continue
+        model = uid.split(".")[-1]
+        cols = node.get("columns", {})
+        if cols:
+            descriptions[model] = {}
+            for col_name, col_data in cols.items():
+                raw = (col_data.get("description") or "").replace("\r", " ").replace("\n", " ")
+                desc = re.sub(r"\s+", " ", raw).strip()
+                descriptions[model][col_name.lower()] = desc
+
+    return descriptions
+
+# ---------------------------------------------------------------------------
 # 3. Build vis.js node/edge data structures
 # ---------------------------------------------------------------------------
 
-def build_vis_data(test_summary):
+def build_vis_data(test_summary, descriptions=None):
     nodes = []
     node_id_map = {}  # "model.column" -> integer id
     current_id = 1
 
     for model, columns in MODEL_COLUMNS.items():
-        layer  = get_layer(model)
-        colors = LAYER_COLORS[layer]
-        tc     = test_summary.get(model, {})
+        layer    = get_layer(model)
+        colors   = LAYER_COLORS[layer]
+        tc       = test_summary.get(model, {})
+        desc_map = (descriptions or {}).get(model, {})
         for col in columns:
             key = f"{model}.{col}"
             node_id_map[key] = current_id
@@ -248,6 +281,7 @@ def build_vis_data(test_summary):
                 "tests_warn": tc.get("warn", 0),
                 "tests_fail": tc.get("fail", 0),
                 "tests": tc.get("tests", []),
+                "description": desc_map.get(col, ""),
             })
             current_id += 1
 
@@ -476,14 +510,37 @@ HTML_TEMPLATE = """\
       transform: translateX(100%);
       transition: transform 0.2s ease;
       overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
     }
     #infoPanel.open { transform: translateX(0); }
+    #panelBackdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.55);
+      z-index: 150;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    #panelBackdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    @media (min-width: 641px) {
+      #panelBackdrop { display: none; }
+    }
     .info-close {
-      position: absolute; top: 10px; right: 10px;
-      background: none; border: none; color: #64748b;
+      position: absolute; top: 8px; right: 8px;
+      width: 40px; height: 40px;
+      display: grid; place-items: center;
+      background: rgba(15, 23, 42, 0.35);
+      border: 1px solid #334155;
+      border-radius: 10px;
+      color: #cbd5e1;
       font-size: 16px; cursor: pointer; line-height: 1;
     }
-    .info-close:hover { color: #f1f5f9; }
+    .info-close:hover { color: #f1f5f9; background: rgba(15, 23, 42, 0.6); }
     .info-model {
       font-size: 12px; font-weight: 700; color: #f1f5f9;
       font-family: monospace; word-break: break-all;
@@ -495,6 +552,10 @@ HTML_TEMPLATE = """\
       display: inline-block; font-size: 10px; font-weight: 600;
       text-transform: uppercase; letter-spacing: 0.05em;
       padding: 2px 7px; border-radius: 4px;
+    }
+    .info-description {
+      font-size: 12px; color: #94a3b8; line-height: 1.55;
+      border-top: 1px solid #334155; padding-top: 10px;
     }
     .info-tests { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
     .info-tests-label { font-size: 11px; color: #64748b; width: 100%; }
@@ -562,9 +623,12 @@ HTML_TEMPLATE = """\
       #infoPanel {
         top: auto !important;
         right: 0; left: 0; bottom: 0;
-        width: 100%; max-height: 55%;
+        width: 100%; max-height: 72vh;
         border-left: none; border-top: 1px solid #334155;
-        transform: translateY(100%);
+        border-top-left-radius: 14px;
+        border-top-right-radius: 14px;
+        padding-bottom: calc(16px + env(safe-area-inset-bottom));
+        transform: translateY(105%);
       }
       #infoPanel.open { transform: translateY(0); }
     }
@@ -625,11 +689,14 @@ HTML_TEMPLATE = """\
 
 <div id="network"></div>
 
+<div id="panelBackdrop" onclick="closePanel()"></div>
+
 <div id="infoPanel">
   <button class="info-close" onclick="closePanel()">✕</button>
   <div class="info-model" id="infoModel"></div>
   <div class="info-column" id="infoColumn"></div>
   <span class="info-layer-badge" id="infoLayerBadge"></span>
+  <div class="info-description" id="infoDescription"></div>
   <div class="info-tests">
     <div class="info-tests-label">
       Model tests (last run)
@@ -656,9 +723,17 @@ function sizeAll() {
   const available = window.innerHeight - headerH - toolbarH - statusH;
   document.getElementById('network').style.height = available + 'px';
   const panel = document.getElementById('infoPanel');
-  panel.style.top    = (headerH + toolbarH) + 'px';
-  panel.style.bottom = statusH + 'px';
-  panel.style.height = '';  // let top/bottom control height on desktop
+  const isMobile = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+  if (isMobile) {
+    // On mobile the panel is a bottom sheet; avoid inline constraints.
+    panel.style.top = '';
+    panel.style.bottom = '';
+    panel.style.height = '';
+  } else {
+    panel.style.top    = (headerH + toolbarH) + 'px';
+    panel.style.bottom = statusH + 'px';
+    panel.style.height = '';  // let top/bottom control height on desktop
+  }
 }
 // keep old name so existing callers still work
 const sizeCanvas = sizeAll;
@@ -799,6 +874,10 @@ function openPanel(nd) {
   badge.style.color       = LAYER_COLORS_JS[nd.layer];
   badge.style.border      = '1px solid ' + LAYER_COLORS_JS[nd.layer] + '55';
 
+  const descEl = document.getElementById('infoDescription');
+  descEl.textContent = nd.description || '';
+  descEl.style.display = nd.description ? '' : 'none';
+
   const p = nd.tests_pass || 0, w = nd.tests_warn || 0, f = nd.tests_fail || 0;
   const total = p + w + f;
 
@@ -833,11 +912,14 @@ function openPanel(nd) {
   document.getElementById('linkDbtDocs').href = docsUrl;
 
   document.getElementById('infoPanel').classList.add('open');
+  const isMobile = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+  if (isMobile) document.getElementById('panelBackdrop').classList.add('open');
   sizeCanvas();
 }
 
 function closePanel() {
   document.getElementById('infoPanel').classList.remove('open');
+  document.getElementById('panelBackdrop').classList.remove('open');
   sizeCanvas();
 }
 
@@ -1073,7 +1155,8 @@ def main():
     output_path = os.path.join(docs_dir, "column_lineage.html")
 
     test_summary = load_test_summary(script_dir)
-    nodes, edges, _ = build_vis_data(test_summary)
+    descriptions = load_column_descriptions(script_dir)
+    nodes, edges, _ = build_vis_data(test_summary, descriptions)
     html = generate_html(nodes, edges)
 
     with open(output_path, "w", encoding="utf-8") as f:
