@@ -1,9 +1,24 @@
 {
   "dim_hosts_cleansed": {
-    "pass": 3,
-    "warn": 0,
+    "pass": 9,
+    "warn": 1,
     "fail": 0,
     "tests": [
+      {
+        "type": "accepted_values",
+        "column": "is_superhost",
+        "status": "pass"
+      },
+      {
+        "type": "expect_table_row_count_to_equal_other_table",
+        "column": "",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "created_at",
+        "status": "pass"
+      },
       {
         "type": "not_null",
         "column": "host_id",
@@ -15,6 +30,26 @@
         "status": "pass"
       },
       {
+        "type": "not_null",
+        "column": "is_superhost",
+        "status": "warn"
+      },
+      {
+        "type": "not_null",
+        "column": "updated_at",
+        "status": "pass"
+      },
+      {
+        "type": "relationships",
+        "column": "host_id",
+        "status": "pass"
+      },
+      {
+        "type": "relationships",
+        "column": "host_id",
+        "status": "pass"
+      },
+      {
         "type": "unique",
         "column": "host_id",
         "status": "pass"
@@ -22,10 +57,55 @@
     ]
   },
   "dim_listings_cleansed": {
-    "pass": 4,
-    "warn": 0,
+    "pass": 18,
+    "warn": 3,
     "fail": 0,
     "tests": [
+      {
+        "type": "accepted_values",
+        "column": "room_type",
+        "status": "pass"
+      },
+      {
+        "type": "consistent_created_at",
+        "column": "",
+        "status": "pass"
+      },
+      {
+        "type": "expect_column_values_to_be_of_type",
+        "column": "price",
+        "status": "pass"
+      },
+      {
+        "type": "expect_column_values_to_be_between",
+        "column": "minimum_nights",
+        "status": "pass"
+      },
+      {
+        "type": "expect_column_value_lengths_to_be_between",
+        "column": "listing_name",
+        "status": "warn"
+      },
+      {
+        "type": "expect_column_values_to_be_between",
+        "column": "price",
+        "status": "warn"
+      },
+      {
+        "type": "expect_column_quantile_values_to_be_between",
+        "column": "price",
+        "status": "pass"
+      },
+      {
+        "type": "expect_table_row_count_to_equal_other_table",
+        "column": "",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "created_at",
+        "status": "pass"
+      },
       {
         "type": "not_null",
         "column": "host_id",
@@ -37,8 +117,155 @@
         "status": "pass"
       },
       {
+        "type": "not_null",
+        "column": "listing_name",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "minimum_nights",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "price",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "room_type",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "updated_at",
+        "status": "pass"
+      },
+      {
         "type": "positive_values",
         "column": "minimum_nights",
+        "status": "pass"
+      },
+      {
+        "type": "positive_values",
+        "column": "price",
+        "status": "warn"
+      },
+      {
+        "type": "relationships",
+        "column": "host_id",
+        "status": "pass"
+      },
+      {
+        "type": "relationships",
+        "column": "listing_id",
+        "status": "pass"
+      },
+      {
+        "type": "unique",
+        "column": "listing_id",
+        "status": "pass"
+      }
+    ]
+  },
+  "dim_listings_w_hosts": {
+    "pass": 17,
+    "warn": 3,
+    "fail": 0,
+    "tests": [
+      {
+        "type": "accepted_values",
+        "column": "room_type",
+        "status": "pass"
+      },
+      {
+        "type": "accepted_values",
+        "column": "host_is_superhost",
+        "status": "pass"
+      },
+      {
+        "type": "expect_column_values_to_be_of_type",
+        "column": "price",
+        "status": "pass"
+      },
+      {
+        "type": "expect_column_quantile_values_to_be_between",
+        "column": "price",
+        "status": "pass"
+      },
+      {
+        "type": "expect_column_max_to_be_between",
+        "column": "price",
+        "status": "warn"
+      },
+      {
+        "type": "expect_table_row_count_to_equal_other_table",
+        "column": "",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "created_at",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "host_id",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "host_is_superhost",
+        "status": "warn"
+      },
+      {
+        "type": "not_null",
+        "column": "host_name",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "listing_id",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "listing_name",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "minimum_nights",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "price",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "room_type",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "updated_at",
+        "status": "pass"
+      },
+      {
+        "type": "positive_values",
+        "column": "minimum_nights",
+        "status": "pass"
+      },
+      {
+        "type": "positive_values",
+        "column": "price",
+        "status": "warn"
+      },
+      {
+        "type": "relationships",
+        "column": "host_id",
         "status": "pass"
       },
       {
@@ -49,10 +276,288 @@
     ]
   },
   "fct_reviews": {
-    "pass": 1,
+    "pass": 13,
+    "warn": 1,
+    "fail": 0,
+    "tests": [
+      {
+        "type": "accepted_values",
+        "column": "review_sentiment",
+        "status": "pass"
+      },
+      {
+        "type": "consistent_created_at",
+        "column": "",
+        "status": "pass"
+      },
+      {
+        "type": "expect_column_values_to_be_between",
+        "column": "review_date",
+        "status": "pass"
+      },
+      {
+        "type": "expect_column_value_lengths_to_be_between",
+        "column": "review_text",
+        "status": "warn"
+      },
+      {
+        "type": "expect_table_row_count_to_equal_other_table",
+        "column": "",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "listing_id",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "review_date",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "review_id",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "review_sentiment",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "review_text",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "reviewer_name",
+        "status": "pass"
+      },
+      {
+        "type": "relationships",
+        "column": "listing_id",
+        "status": "pass"
+      },
+      {
+        "type": "relationships",
+        "column": "listing_id",
+        "status": "pass"
+      },
+      {
+        "type": "unique",
+        "column": "review_id",
+        "status": "pass"
+      }
+    ]
+  },
+  "mart_fullmoon_reviews": {
+    "pass": 12,
     "warn": 0,
     "fail": 0,
     "tests": [
+      {
+        "type": "accepted_values",
+        "column": "review_sentiment",
+        "status": "pass"
+      },
+      {
+        "type": "accepted_values",
+        "column": "is_full_moon",
+        "status": "pass"
+      },
+      {
+        "type": "expect_table_row_count_to_equal_other_table",
+        "column": "",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "is_full_moon",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "listing_id",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "review_date",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "review_id",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "review_sentiment",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "review_text",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "reviewer_name",
+        "status": "pass"
+      },
+      {
+        "type": "relationships",
+        "column": "listing_id",
+        "status": "pass"
+      },
+      {
+        "type": "unique",
+        "column": "review_id",
+        "status": "pass"
+      }
+    ]
+  },
+  "src_hosts": {
+    "pass": 5,
+    "warn": 1,
+    "fail": 0,
+    "tests": [
+      {
+        "type": "accepted_values",
+        "column": "is_superhost",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "created_at",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "host_id",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "is_superhost",
+        "status": "warn"
+      },
+      {
+        "type": "not_null",
+        "column": "updated_at",
+        "status": "pass"
+      },
+      {
+        "type": "unique",
+        "column": "host_id",
+        "status": "pass"
+      }
+    ]
+  },
+  "src_listings": {
+    "pass": 13,
+    "warn": 0,
+    "fail": 0,
+    "tests": [
+      {
+        "type": "accepted_values",
+        "column": "room_type",
+        "status": "pass"
+      },
+      {
+        "type": "expect_column_values_to_be_between",
+        "column": "minimum_nights",
+        "status": "pass"
+      },
+      {
+        "type": "expect_column_values_to_match_regex",
+        "column": "listing_url",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "created_at",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "host_id",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "listing_id",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "listing_name",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "listing_url",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "minimum_nights",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "price_str",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "room_type",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "updated_at",
+        "status": "pass"
+      },
+      {
+        "type": "unique",
+        "column": "listing_id",
+        "status": "pass"
+      }
+    ]
+  },
+  "src_reviews": {
+    "pass": 5,
+    "warn": 1,
+    "fail": 0,
+    "tests": [
+      {
+        "type": "accepted_values",
+        "column": "review_sentiment",
+        "status": "pass"
+      },
+      {
+        "type": "expect_column_values_to_be_between",
+        "column": "review_date",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "listing_id",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "review_date",
+        "status": "pass"
+      },
+      {
+        "type": "not_null",
+        "column": "review_sentiment",
+        "status": "warn"
+      },
       {
         "type": "not_null",
         "column": "reviewer_name",
