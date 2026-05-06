@@ -69,7 +69,7 @@ These snapshots make it possible to answer historical questions: "What was this 
 
 ## Data quality and trust
 
-The pipeline has 78 tests across all models covering:
+The pipeline has 102 tests across all models covering:
 
 - **Primary keys** — every model's primary key is tested for uniqueness and nullability
 - **Foreign keys** — every relationship between models is validated at run time
