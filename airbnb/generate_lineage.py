@@ -434,13 +434,13 @@ HTML_TEMPLATE = """\
 
     /* ---- Info panel ---- */
     #infoPanel {
-      position: absolute;
-      right: 0; top: 0; bottom: 0;
+      position: fixed;
+      right: 0;
       width: 260px;
       background: #1e293b;
       border-left: 1px solid #334155;
       padding: 16px;
-      z-index: 50;
+      z-index: 200;
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -517,7 +517,8 @@ HTML_TEMPLATE = """\
       .trace-label { display: none; }
       #traceSelect { max-width: 100%; width: 160px; font-size: 11px; }
       #infoPanel {
-        top: auto; right: 0; left: 0; bottom: 0;
+        top: auto !important;
+        right: 0; left: 0; bottom: 0;
         width: 100%; max-height: 55%;
         border-left: none; border-top: 1px solid #334155;
         transform: translateY(100%);
@@ -579,23 +580,23 @@ HTML_TEMPLATE = """\
   <button class="toolbar-btn" onclick="clearTrace()">Clear</button>
 </div>
 
-<div id="network">
-  <div id="infoPanel">
-    <button class="info-close" onclick="closePanel()">✕</button>
-    <div class="info-model" id="infoModel"></div>
-    <div class="info-column" id="infoColumn"></div>
-    <span class="info-layer-badge" id="infoLayerBadge"></span>
-    <div class="info-tests">
-      <div class="info-tests-label">Model tests (last run)</div>
-      <span class="test-badge pass" id="badgePass"></span>
-      <span class="test-badge warn" id="badgeWarn"></span>
-      <span class="test-badge fail" id="badgeFail"></span>
-      <div class="info-no-tests" id="noTests" style="display:none">No tests recorded</div>
-    </div>
-    <div class="info-links">
-      <a class="info-link" id="linkDbtDocs" href="#" target="_blank">📖 View in dbt Docs</a>
-      <a class="info-link" href="../edr/" target="_blank">🔬 Test Results (Elementary)</a>
-    </div>
+<div id="network"></div>
+
+<div id="infoPanel">
+  <button class="info-close" onclick="closePanel()">✕</button>
+  <div class="info-model" id="infoModel"></div>
+  <div class="info-column" id="infoColumn"></div>
+  <span class="info-layer-badge" id="infoLayerBadge"></span>
+  <div class="info-tests">
+    <div class="info-tests-label">Model tests (last run)</div>
+    <span class="test-badge pass" id="badgePass"></span>
+    <span class="test-badge warn" id="badgeWarn"></span>
+    <span class="test-badge fail" id="badgeFail"></span>
+    <div class="info-no-tests" id="noTests" style="display:none">No tests recorded for this model</div>
+  </div>
+  <div class="info-links">
+    <a class="info-link" id="linkDbtDocs" href="#" target="_blank">📖 View in dbt Docs</a>
+    <a class="info-link" href="../edr/" target="_blank">🔬 Test Results (Elementary)</a>
   </div>
 </div>
 
@@ -613,10 +614,22 @@ function sizeCanvas() {
   document.getElementById('network').style.height =
     (window.innerHeight - header - toolbar - status) + 'px';
 }
-sizeCanvas();
-window.addEventListener('resize', () => { sizeCanvas(); if (typeof network !== 'undefined') network.fit(); });
-// Re-measure after fonts/flexbox settle on mobile
-setTimeout(sizeCanvas, 100);
+function sizeAll() {
+  const headerH  = document.querySelector('header').offsetHeight;
+  const toolbarH = document.querySelector('.toolbar').offsetHeight;
+  const statusH  = document.getElementById('statusBar').offsetHeight;
+  const available = window.innerHeight - headerH - toolbarH - statusH;
+  document.getElementById('network').style.height = available + 'px';
+  const panel = document.getElementById('infoPanel');
+  panel.style.top    = (headerH + toolbarH) + 'px';
+  panel.style.bottom = statusH + 'px';
+  panel.style.height = '';  // let top/bottom control height on desktop
+}
+// keep old name so existing callers still work
+const sizeCanvas = sizeAll;
+sizeAll();
+window.addEventListener('resize', () => { sizeAll(); if (typeof network !== 'undefined') network.fit(); });
+setTimeout(sizeAll, 100);
 
 // ---- Data ----
 const nodesData = __NODES_JSON__;
