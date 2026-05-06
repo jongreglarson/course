@@ -41,6 +41,7 @@ MODEL_COLUMNS = {
     "raw_hosts":              ["id", "name", "is_superhost", "created_at", "updated_at"],
     "raw_listings":           ["id", "name", "listing_url", "room_type", "minimum_nights", "host_id", "price", "created_at", "updated_at"],
     "raw_reviews":            ["listing_id", "date", "reviewer_name", "comments", "sentiment"],
+    "seed_full_moon_dates":   ["full_moon_date"],
     "src_hosts":              ["host_id", "host_name", "is_superhost", "created_at", "updated_at"],
     "src_listings":           ["listing_id", "listing_name", "listing_url", "room_type", "minimum_nights", "host_id", "price_str", "created_at", "updated_at"],
     "src_reviews":            ["listing_id", "review_date", "reviewer_name", "review_text", "review_sentiment", "is_lycanthrope"],
@@ -77,7 +78,9 @@ EDGES = [
     ("raw_reviews.reviewer_name","src_reviews.reviewer_name"),
     ("raw_reviews.comments",     "src_reviews.review_text"),
     ("raw_reviews.sentiment",    "src_reviews.review_sentiment"),
-    # is_lycanthrope is computed — no upstream edge
+    # is_lycanthrope is computed from reviewer_name + listing_id (deterministic hash)
+    ("src_reviews.reviewer_name", "src_reviews.is_lycanthrope"),
+    ("src_reviews.listing_id",    "src_reviews.is_lycanthrope"),
 
     # src_hosts → dim_hosts_cleansed
     ("src_hosts.host_id",      "dim_hosts_cleansed.host_id"),
@@ -116,7 +119,11 @@ EDGES = [
     ("src_reviews.review_text",     "fct_reviews.review_text"),
     ("src_reviews.review_sentiment","fct_reviews.review_sentiment"),
     ("src_reviews.is_lycanthrope",  "fct_reviews.is_lycanthrope"),
-    # review_id is surrogate key — no upstream edge
+    # review_id is surrogate key (generated from other src_reviews columns)
+    ("src_reviews.listing_id",    "fct_reviews.review_id"),
+    ("src_reviews.review_date",   "fct_reviews.review_id"),
+    ("src_reviews.reviewer_name", "fct_reviews.review_id"),
+    ("src_reviews.review_text",   "fct_reviews.review_id"),
 
     # fct_reviews → mart_fullmoon_reviews
     ("fct_reviews.review_id",        "mart_fullmoon_reviews.review_id"),
@@ -126,7 +133,9 @@ EDGES = [
     ("fct_reviews.review_text",      "mart_fullmoon_reviews.review_text"),
     ("fct_reviews.review_sentiment", "mart_fullmoon_reviews.review_sentiment"),
     ("fct_reviews.is_lycanthrope",   "mart_fullmoon_reviews.is_lycanthrope"),
-    # is_full_moon is computed from seed join — no upstream column edge
+    # is_full_moon is computed from a join between review_date and seed_full_moon_dates.full_moon_date
+    ("fct_reviews.review_date",              "mart_fullmoon_reviews.is_full_moon"),
+    ("seed_full_moon_dates.full_moon_date",  "mart_fullmoon_reviews.is_full_moon"),
 ]
 
 # ---------------------------------------------------------------------------
