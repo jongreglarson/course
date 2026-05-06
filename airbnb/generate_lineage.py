@@ -210,6 +210,36 @@ def load_test_summary(script_dir):
 # 2b. Column description loader
 # ---------------------------------------------------------------------------
 
+# Fallback descriptions for columns not present in or stale in the manifest.
+# Used when docs/manifest.json is the only available manifest (e.g. in CI).
+DESCRIPTION_OVERRIDES = {
+    "src_reviews": {
+        "is_lycanthrope": (
+            "Boolean flag computed by hashing reviewer_name and listing_id and checking "
+            "divisibility by 50 — MOD(ABS(HASH(reviewer_name, listing_id)), 50) = 0. "
+            "Marks approximately 2% of reviewer–listing pairs as ‘lycanthropes’, "
+            "a fictional cohort used to explore whether full-moon timing correlates with "
+            "review sentiment for a specific reviewer segment."
+        ),
+    },
+    "fct_reviews": {
+        "is_lycanthrope": (
+            "Passed through from src_reviews. Boolean flag identifying approximately 2% of "
+            "reviewer–listing pairs as ‘lycanthropes’ via a deterministic hash — "
+            "MOD(ABS(HASH(reviewer_name, listing_id)), 50) = 0. Used in mart_fullmoon_reviews "
+            "for segmented lunar sentiment analysis alongside is_full_moon."
+        ),
+    },
+    "mart_fullmoon_reviews": {
+        "is_lycanthrope": (
+            "Inherited from fct_reviews. Identifies ‘lycanthrope’ reviewers — approximately "
+            "2% of the dataset, flagged by a deterministic hash of reviewer_name and listing_id. "
+            "Enables filtering full-moon reviews by this cohort to test whether the lunar "
+            "sentiment effect is stronger for lycanthrope reviewers than for the general population."
+        ),
+    },
+}
+
 def load_column_descriptions(script_dir):
     """Returns {model: {column: description}} from manifest, lowercase column keys."""
     import re
@@ -235,6 +265,12 @@ def load_column_descriptions(script_dir):
                 raw = (col_data.get("description") or "").replace("\r", " ").replace("\n", " ")
                 desc = re.sub(r"\s+", " ", raw).strip()
                 descriptions[model][col_name.lower()] = desc
+
+    # Apply overrides for columns absent or empty in the manifest
+    for model, cols in DESCRIPTION_OVERRIDES.items():
+        for col, override_desc in cols.items():
+            if not descriptions.get(model, {}).get(col):
+                descriptions.setdefault(model, {})[col] = override_desc
 
     return descriptions
 

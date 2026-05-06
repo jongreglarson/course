@@ -191,6 +191,15 @@ models:
               arguments:
                 values: ['positive', 'neutral', 'negative']
 
+      - name: is_lycanthrope
+        description: >
+          Boolean flag computed by hashing reviewer_name and listing_id and
+          checking divisibility by 50 — MOD(ABS(HASH(reviewer_name,
+          listing_id)), 50) = 0. Marks approximately 2% of reviewer–listing
+          pairs as 'lycanthropes', a fictional cohort used to explore whether
+          full-moon timing correlates with review sentiment for a specific
+          reviewer segment.
+
   # -----------------------------------------------------------------------
   # DIMENSION LAYER — cleansed, business-ready attribute tables
   # -----------------------------------------------------------------------
@@ -569,6 +578,14 @@ models:
               arguments:
                 values: ['positive', 'neutral', 'negative']
 
+      - name: is_lycanthrope
+        description: >
+          Passed through from src_reviews. Boolean flag identifying
+          approximately 2% of reviewer–listing pairs as 'lycanthropes' via
+          a deterministic hash — MOD(ABS(HASH(reviewer_name, listing_id)),
+          50) = 0. Used in mart_fullmoon_reviews for segmented lunar
+          sentiment analysis alongside is_full_moon.
+
   # -----------------------------------------------------------------------
   # MART LAYER — business-specific aggregations and enrichments
   # -----------------------------------------------------------------------
@@ -643,6 +660,15 @@ models:
           - accepted_values:
               arguments:
                 values: ['positive', 'neutral', 'negative']
+
+      - name: is_lycanthrope
+        description: >
+          Inherited from fct_reviews. Identifies 'lycanthrope' reviewers —
+          approximately 2% of the dataset, flagged by a deterministic hash
+          of reviewer_name and listing_id. Enables filtering full-moon
+          reviews by this cohort to test whether the lunar sentiment effect
+          is stronger for lycanthrope reviewers than for the general
+          population.
 
       - name: is_full_moon
         description: '{{ doc("mart_fullmoon_reviews__is_full_moon") }}'
