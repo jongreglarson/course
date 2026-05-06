@@ -5,6 +5,7 @@ generate_lineage.py
 Generates a self-contained static HTML file at docs/column_lineage.html
 that renders an interactive column-level lineage graph for the Airbnb dbt project.
 Uses vis.js (loaded from CDN) with a hierarchical left-to-right layout.
+Requires: Python 3.8+ stdlib only (json, os, re).
 """
 
 import json
