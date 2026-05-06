@@ -7,6 +7,7 @@ on:
       - "airbnb/docs/**"
       - "airbnb/edr_target/elementary_report.html"
       - "airbnb/generate_lineage.py"
+      - ".github/workflows/deploy-docs.yml"
   workflow_dispatch:
 
 permissions:
