@@ -379,6 +379,36 @@ HTML_TEMPLATE = """\
       gap: 20px;
     }
 
+    /* ---- Mobile ---- */
+    @media (max-width: 640px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 8px 12px;
+      }
+      header h1 { font-size: 13px; }
+      .legend {
+        gap: 6px;
+        width: 100%;
+      }
+      .legend-item {
+        font-size: 11px;
+        padding: 2px 5px;
+      }
+      .legend-dot { width: 10px; height: 10px; }
+      .search-wrap {
+        margin-left: 0;
+        width: 100%;
+      }
+      #searchBox { width: 100%; flex: 1; min-width: 0; }
+      .toolbar { padding: 6px 12px; gap: 6px; }
+      .toolbar-btn { font-size: 11px; padding: 4px 8px; }
+      .toolbar-sep { display: none; }
+      .trace-label { display: none; }
+      #traceSelect { max-width: 100%; width: 160px; font-size: 11px; }
+    }
+
     /* ---- Tooltip override (vis uses title attr, we style the vis tooltip) ---- */
     .vis-tooltip {
       background: #1e293b !important;
@@ -450,7 +480,9 @@ function sizeCanvas() {
     (window.innerHeight - header - toolbar - status) + 'px';
 }
 sizeCanvas();
-window.addEventListener('resize', () => { sizeCanvas(); network && network.fit(); });
+window.addEventListener('resize', () => { sizeCanvas(); if (typeof network !== 'undefined') network.fit(); });
+// Re-measure after fonts/flexbox settle on mobile
+setTimeout(sizeCanvas, 100);
 
 // ---- Data ----
 const nodesData = __NODES_JSON__;
