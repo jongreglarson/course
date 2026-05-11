@@ -7,7 +7,6 @@ on:
       - "airbnb/docs/**"
       - "airbnb/edr_target/elementary_report.html"
       - "airbnb/generate_lineage.py"
-      - "airbnb/math-game/**"
       - ".github/workflows/deploy-docs.yml"
   workflow_dispatch:
 
@@ -35,7 +34,7 @@ jobs:
 
       - name: Build site
         run: |
-          mkdir -p _site/original _site/upscaled/assets _site/edr _site/upscaled-hub _site/lineage _site/math-game
+          mkdir -p _site/original _site/upscaled/assets _site/edr _site/upscaled-hub _site/lineage
 
           cp airbnb/docs/index.html    _site/original/
           cp airbnb/docs/manifest.json _site/original/
@@ -49,10 +48,6 @@ jobs:
 
           cp airbnb/edr_target/elementary_report.html _site/edr/index.html
           cp airbnb/docs/column_lineage.html _site/lineage/index.html
-
-          cp airbnb/math-game/index.html    _site/math-game/
-          cp airbnb/math-game/manifest.json _site/math-game/
-          cp airbnb/math-game/sw.js         _site/math-game/
 
           cat > _site/upscaled-hub/index.html << 'HUBPAGE'
           <!DOCTYPE html>
