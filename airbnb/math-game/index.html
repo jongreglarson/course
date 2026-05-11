@@ -332,7 +332,8 @@
     <div id="time-opts">
       <div class="opts-label">Duration</div>
       <div class="opt-row">
-        <button class="opt-pill on" data-t="60">60s</button>
+        <button class="opt-pill" data-t="60">60s</button>
+        <button class="opt-pill on" data-t="90">90s</button>
         <button class="opt-pill" data-t="120">2 min</button>
         <button class="opt-pill" data-t="300">5 min</button>
       </div>
@@ -410,7 +411,7 @@ const cfg = {
   diff:    'high',
   boosts:  new Set(),
   mode:    'time',
-  timeSec: 60,
+  timeSec: 90,
   taskCnt: 10,
 };
 
@@ -534,7 +535,7 @@ function speak(p) {
 function startGame() {
   gs = {
     correct: 0, attempts: 0, streak: 0, bestStreak: 0,
-    cmplx: 0, t0: Date.now(), timeLeft: cfg.timeSec, ticker: null, cur: null,
+    cmplx: 0, wrongCnt: 0, t0: Date.now(), timeLeft: cfg.timeSec, ticker: null, cur: null,
   };
 
   $('timer-track').style.display = cfg.mode === 'time' ? '' : 'none';
@@ -571,6 +572,7 @@ function nextQ() {
   $('hint').className = 'hint-line';
 
   gs.cur = makeProblem();
+  gs.wrongCnt = 0;
   updateProgress();
   $('g-score').textContent = gs.correct;
 
@@ -610,11 +612,13 @@ function checkAnswer() {
     showStreak();
     inp.className = 'answer-inp err';
 
-    if (cfg.mode === 'practice') {
+    gs.wrongCnt++;
+
+    if (cfg.mode === 'practice' || gs.wrongCnt >= 3) {
       setHint(`✗  Answer: ${fmt(gs.cur.ans)}`, 'err');
       setTimeout(() => { gs.attempts++; nextQ(); }, 1800);
     } else {
-      setHint('✗ Try again', 'err');
+      setHint(`✗ Try again (${3 - gs.wrongCnt} left)`, 'err');
       inp.value = '';
       setTimeout(() => {
         inp.className = 'answer-inp';
