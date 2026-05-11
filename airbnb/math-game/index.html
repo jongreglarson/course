@@ -56,7 +56,7 @@
 
     .navbar {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 28px;
+      margin-bottom: 20px;
     }
     .icon-btn {
       width: 38px; height: 38px;
@@ -65,6 +65,49 @@
       display: flex; align-items: center; justify-content: center;
     }
     .nav-title { font-size: 1rem; font-weight: 600; }
+
+    /* session toggle */
+    .sess-toggle {
+      display: flex; background: var(--surf);
+      border-radius: 12px; padding: 4px; margin-bottom: 24px;
+    }
+    .sess-btn {
+      flex: 1; padding: 11px 8px;
+      background: transparent; border: none; border-radius: 9px;
+      color: var(--muted); font-size: 0.88rem; font-weight: 500;
+      cursor: pointer; transition: background .15s, color .15s;
+      -webkit-tap-highlight-color: transparent;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .sess-btn.on { background: var(--acc); color: white; font-weight: 700; }
+    .miss-badge {
+      background: rgba(255,255,255,0.25);
+      border-radius: 999px; padding: 1px 7px;
+      font-size: 0.75rem; font-weight: 700;
+      min-width: 22px; text-align: center;
+    }
+    .sess-btn:not(.on) .miss-badge {
+      background: var(--surf2); color: var(--acc-lt);
+    }
+
+    /* missed panel */
+    #missed-panel {
+      background: var(--surf); border-radius: 16px;
+      padding: 22px 20px; text-align: center;
+      margin-bottom: 20px; display: none;
+    }
+    .mp-title { font-size: 0.85rem; color: var(--muted); margin-bottom: 10px; }
+    .mp-count { font-size: 3rem; font-weight: 700; color: var(--acc); line-height: 1; }
+    .mp-lbl { font-size: 0.78rem; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .mp-note {
+      font-size: 0.78rem; color: var(--muted);
+      margin-top: 14px; line-height: 1.6;
+      border-top: 1px solid var(--border); padding-top: 14px;
+    }
+    .mp-note strong { color: var(--green); }
+
+    /* new-mode sections */
+    #new-mode-sections { display: block; }
 
     .sec-label {
       font-size: 0.82rem; color: var(--muted);
@@ -158,7 +201,9 @@
       color: var(--acc); font-size: 1.15rem; font-weight: 700;
       letter-spacing: 0.1em; cursor: pointer;
       -webkit-tap-highlight-color: transparent;
+      transition: opacity .15s;
     }
+    .start-btn:disabled { opacity: 0.3; cursor: default; }
 
     /* ── GAME ── */
     #game {
@@ -218,7 +263,6 @@
 
     .hint-line {
       font-size: 0.9rem; min-height: 22px; text-align: center;
-      transition: color .15s;
     }
     .hint-line.ok  { color: var(--green); }
     .hint-line.err { color: var(--red); }
@@ -295,59 +339,81 @@
     <button class="icon-btn">&#128276;</button>
   </div>
 
-  <div class="sec-label">Select operations</div>
-  <div class="ops-row">
-    <button class="op-btn on" data-op="+">+</button>
-    <button class="op-btn on" data-op="-">&#8722;</button>
-    <button class="op-btn on" data-op="×">&#215;</button>
-    <button class="op-btn on" data-op="÷">&#247;</button>
+  <!-- session type toggle -->
+  <div class="sess-toggle">
+    <button class="sess-btn on" data-sess="new">New Problems</button>
+    <button class="sess-btn" data-sess="missed">
+      Missed&nbsp;<span class="miss-badge" id="miss-badge">0</span>
+    </button>
   </div>
 
-  <div class="sec-label">Difficulty level</div>
-  <div class="diff-row">
-    <button class="pill" data-d="low">&lt; 500</button>
-    <button class="pill" data-d="mid">500 &lt; ? &lt; 1K</button>
-    <button class="pill on" data-d="high">1K &lt; ? &lt; 10K</button>
-  </div>
-
-  <div class="sec-label">Brain Boosters</div>
-  <div class="booster" data-b="complexity">
-    <div class="b-icon">&#9201;</div>
-    <div class="b-label">Improve complexity for tasks</div>
-    <div class="radio-ring"></div>
-  </div>
-  <div class="booster" data-b="listen">
-    <div class="b-icon">&#128266;</div>
-    <div class="b-label">Listen and solve</div>
-    <div class="radio-ring"></div>
-  </div>
-
-  <div class="mode-bar">
-    <button class="mode-tab on" data-m="time">Time</button>
-    <button class="mode-tab" data-m="tasks">Tasks</button>
-    <button class="mode-tab" data-m="practice">Practice</button>
-  </div>
-
-  <div class="mode-opts">
-    <div id="time-opts">
-      <div class="opts-label">Duration</div>
-      <div class="opt-row">
-        <button class="opt-pill" data-t="60">60s</button>
-        <button class="opt-pill on" data-t="90">90s</button>
-        <button class="opt-pill" data-t="120">2 min</button>
-        <button class="opt-pill" data-t="300">5 min</button>
-      </div>
+  <!-- missed mode info panel -->
+  <div id="missed-panel">
+    <div class="mp-title">Problems saved to your bank</div>
+    <div class="mp-count" id="mp-count">0</div>
+    <div class="mp-lbl">missed problems</div>
+    <div class="mp-note">
+      90-second session &nbsp;·&nbsp; correct answers remove problems from your bank<br>
+      <strong>Clear the bank to master them all</strong>
     </div>
-    <div id="tasks-opts" style="display:none">
-      <div class="opts-label">Number of problems</div>
-      <div class="opt-row">
-        <button class="opt-pill on" data-n="10">10</button>
-        <button class="opt-pill" data-n="25">25</button>
-        <button class="opt-pill" data-n="50">50</button>
-      </div>
+  </div>
+
+  <!-- new problem settings (hidden in missed mode) -->
+  <div id="new-mode-sections">
+    <div class="sec-label">Select operations</div>
+    <div class="ops-row">
+      <button class="op-btn on" data-op="+">+</button>
+      <button class="op-btn on" data-op="-">&#8722;</button>
+      <button class="op-btn on" data-op="×">&#215;</button>
+      <button class="op-btn on" data-op="÷">&#247;</button>
     </div>
-    <div id="practice-opts" style="display:none">
-      <div class="opts-label" style="padding-top:8px">Unlimited — answer revealed after each wrong attempt</div>
+
+    <div class="sec-label">Difficulty level</div>
+    <div class="diff-row">
+      <button class="pill" data-d="low">&lt; 500</button>
+      <button class="pill" data-d="mid">500 &lt; ? &lt; 1K</button>
+      <button class="pill on" data-d="high">1K &lt; ? &lt; 10K</button>
+    </div>
+
+    <div class="sec-label">Brain Boosters</div>
+    <div class="booster" data-b="complexity">
+      <div class="b-icon">&#9201;</div>
+      <div class="b-label">Improve complexity for tasks</div>
+      <div class="radio-ring"></div>
+    </div>
+    <div class="booster" data-b="listen">
+      <div class="b-icon">&#128266;</div>
+      <div class="b-label">Listen and solve</div>
+      <div class="radio-ring"></div>
+    </div>
+
+    <div class="mode-bar">
+      <button class="mode-tab on" data-m="time">Time</button>
+      <button class="mode-tab" data-m="tasks">Tasks</button>
+      <button class="mode-tab" data-m="practice">Practice</button>
+    </div>
+
+    <div class="mode-opts">
+      <div id="time-opts">
+        <div class="opts-label">Duration</div>
+        <div class="opt-row">
+          <button class="opt-pill" data-t="60">60s</button>
+          <button class="opt-pill on" data-t="90">90s</button>
+          <button class="opt-pill" data-t="120">2 min</button>
+          <button class="opt-pill" data-t="300">5 min</button>
+        </div>
+      </div>
+      <div id="tasks-opts" style="display:none">
+        <div class="opts-label">Number of problems</div>
+        <div class="opt-row">
+          <button class="opt-pill on" data-n="10">10</button>
+          <button class="opt-pill" data-n="25">25</button>
+          <button class="opt-pill" data-n="50">50</button>
+        </div>
+      </div>
+      <div id="practice-opts" style="display:none">
+        <div class="opts-label" style="padding-top:8px">Unlimited — answer revealed after each wrong attempt</div>
+      </div>
     </div>
   </div>
 
@@ -357,10 +423,10 @@
 <!-- ═══ GAME ═══ -->
 <div id="game" class="screen">
   <div class="game-top">
-    <div class="game-info" id="g-prog">1 / 10</div>
+    <div class="game-info" id="g-prog">90s</div>
     <div class="game-info">Score: <strong id="g-score">0</strong></div>
   </div>
-  <div class="timer-track" id="timer-track">
+  <div class="timer-track">
     <div class="timer-fill" id="timer-fill" style="width:100%"></div>
   </div>
   <div class="problem-area">
@@ -405,31 +471,70 @@
 <script>
 // ── CONFIG ──────────────────────────────────────────────────────
 const RANGES = { low: [1, 499], mid: [500, 999], high: [1000, 9999] };
+const MISSED_KEY = 'math-boost-missed';
 
 const cfg = {
-  ops:     new Set(['+', '-', '×', '÷']),
-  diff:    'high',
-  boosts:  new Set(),
-  mode:    'time',
-  timeSec: 90,
-  taskCnt: 10,
+  ops:        new Set(['+', '-', '×', '÷']),
+  diff:       'high',
+  boosts:     new Set(),
+  mode:       'time',
+  timeSec:    90,
+  taskCnt:    10,
+  missedMode: false,
 };
 
-// ── GAME SESSION ────────────────────────────────────────────────
 let gs = {};
 
-// ── UTILS ───────────────────────────────────────────────────────
+// ── UTILS ────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
 const rand = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
-
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
   $(id).classList.add('on');
 }
-
 function fmt(n) { return n.toLocaleString('en-US'); }
 
-// ── SETUP WIRING ────────────────────────────────────────────────
+// ── MISSED PROBLEMS (localStorage) ──────────────────────────────
+function loadMissed() {
+  try { return JSON.parse(localStorage.getItem(MISSED_KEY) || '[]'); }
+  catch { return []; }
+}
+function saveMissed(arr) { localStorage.setItem(MISSED_KEY, JSON.stringify(arr)); }
+
+function addMissed(p) {
+  const arr = loadMissed();
+  if (!arr.some(x => x.a === p.a && x.op === p.op && x.b === p.b)) {
+    arr.push({ a: p.a, b: p.b, op: p.op, ans: p.ans });
+    if (arr.length > 500) arr.shift();
+    saveMissed(arr);
+  }
+  refreshMissedUI();
+}
+
+function removeMissed(p) {
+  saveMissed(loadMissed().filter(x => !(x.a === p.a && x.op === p.op && x.b === p.b)));
+  refreshMissedUI();
+}
+
+function refreshMissedUI() {
+  const count = loadMissed().length;
+  $('miss-badge').textContent = count;
+  $('mp-count').textContent   = count;
+  const empty = cfg.missedMode && count === 0;
+  $('start-btn').disabled = empty;
+}
+
+// ── SESSION TOGGLE ───────────────────────────────────────────────
+document.querySelectorAll('[data-sess]').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('[data-sess]').forEach(x => x.classList.remove('on'));
+  b.classList.add('on');
+  cfg.missedMode = b.dataset.sess === 'missed';
+  $('missed-panel').style.display      = cfg.missedMode ? '' : 'none';
+  $('new-mode-sections').style.display = cfg.missedMode ? 'none' : '';
+  refreshMissedUI();
+}));
+
+// ── SETUP WIRING ─────────────────────────────────────────────────
 document.querySelectorAll('.op-btn').forEach(b => b.addEventListener('click', () => {
   const op = b.dataset.op;
   if (cfg.ops.has(op) && cfg.ops.size > 1) { cfg.ops.delete(op); b.classList.remove('on'); }
@@ -467,18 +572,15 @@ document.querySelectorAll('[data-n]').forEach(b => b.addEventListener('click', (
   b.classList.add('on'); cfg.taskCnt = +b.dataset.n;
 }));
 
-// ── PROBLEM GENERATOR ───────────────────────────────────────────
+// ── PROBLEM GENERATOR ────────────────────────────────────────────
 function makeProblem() {
   const ops = [...cfg.ops];
   const op  = ops[rand(0, ops.length - 1)];
   const [mn, mx] = RANGES[cfg.diff];
-
-  // complexity booster gradually widens the range toward mx
   const cm  = cfg.boosts.has('complexity') ? Math.min(1 + gs.cmplx * 0.08, 1.5) : 1;
   const hi  = Math.min(Math.round(mx * cm), mx);
 
   let a, b, ans;
-
   for (let i = 0; i < 300; i++) {
     switch (op) {
       case '+':
@@ -509,19 +611,18 @@ function makeProblem() {
       return { a, b, op, ans };
     }
   }
-
-  // safe fallback: simple addition
-  ans = rand(mn, hi);
-  a   = rand(1, ans - 1);
+  ans = rand(mn, hi); a = rand(1, ans - 1);
   return { a, b: ans - a, op: '+', ans };
 }
 
-function problemText(p) {
-  const sym = { '+': '+', '-': '−', '×': '×', '÷': '÷' };
-  return `${fmt(p.a)} ${sym[p.op]} ${fmt(p.b)}`;
+function getNextProblem() {
+  if (cfg.missedMode) {
+    return gs.queue.length > 0 ? gs.queue.shift() : null;
+  }
+  return makeProblem();
 }
 
-// ── SPEECH ──────────────────────────────────────────────────────
+// ── SPEECH ───────────────────────────────────────────────────────
 function speak(p) {
   if (!window.speechSynthesis) return;
   const words = { '+': 'plus', '-': 'minus', '×': 'times', '÷': 'divided by' };
@@ -531,15 +632,25 @@ function speak(p) {
   speechSynthesis.speak(u);
 }
 
-// ── GAME ────────────────────────────────────────────────────────
+// ── GAME ─────────────────────────────────────────────────────────
 function startGame() {
+  const timeSec = cfg.missedMode ? 90 : cfg.timeSec;
   gs = {
     correct: 0, attempts: 0, streak: 0, bestStreak: 0,
-    cmplx: 0, wrongCnt: 0, t0: Date.now(), timeLeft: cfg.timeSec, ticker: null, cur: null,
+    cmplx: 0, wrongCnt: 0, allCleared: false,
+    t0: Date.now(), timeLeft: timeSec, timeSec,
+    ticker: null, cur: null, queue: [],
   };
 
-  $('timer-track').style.display = cfg.mode === 'time' ? '' : 'none';
-  if (cfg.mode === 'time') startTicker();
+  if (cfg.missedMode) {
+    const missed = loadMissed();
+    gs.queue = [...missed].sort(() => Math.random() - 0.5);
+  }
+
+  // always show timer bar (both new+missed are timed)
+  const useTime = cfg.missedMode || cfg.mode === 'time';
+  document.querySelector('.timer-track').style.display = useTime ? '' : 'none';
+  if (useTime) startTicker();
 
   show('game');
   nextQ();
@@ -557,7 +668,7 @@ function startTicker() {
 }
 
 function updateBar() {
-  const pct  = Math.max(0, gs.timeLeft / cfg.timeSec * 100);
+  const pct  = Math.max(0, gs.timeLeft / gs.timeSec * 100);
   const fill = $('timer-fill');
   fill.style.width      = pct + '%';
   fill.style.background = pct > 25 ? 'var(--acc)' : 'var(--red)';
@@ -571,25 +682,42 @@ function nextQ() {
   $('hint').textContent = '';
   $('hint').className = 'hint-line';
 
-  gs.cur = makeProblem();
+  const p = getNextProblem();
+  if (p === null) {
+    gs.allCleared = true;
+    endGame();
+    return;
+  }
+
+  gs.cur      = p;
   gs.wrongCnt = 0;
   updateProgress();
   $('g-score').textContent = gs.correct;
 
-  if (cfg.boosts.has('listen')) {
+  if (cfg.boosts.has('listen') && !cfg.missedMode) {
     $('problem-eq').textContent = '&#128266; Listen…';
     speak(gs.cur);
     setTimeout(() => { $('problem-eq').textContent = '? ? ?'; }, 80);
   } else {
     $('problem-eq').textContent = problemText(gs.cur);
   }
-
   inp.focus();
 }
 
 function updateProgress() {
-  if (cfg.mode === 'tasks')    $('g-prog').textContent = `${gs.attempts + 1} / ${cfg.taskCnt}`;
-  else if (cfg.mode === 'practice') $('g-prog').textContent = `Q${gs.attempts + 1}`;
+  const useTime = cfg.missedMode || cfg.mode === 'time';
+  if (useTime) {
+    $('g-prog').textContent = Math.ceil(Math.max(0, gs.timeLeft)) + 's';
+  } else if (cfg.mode === 'tasks') {
+    $('g-prog').textContent = `${gs.attempts + 1} / ${cfg.taskCnt}`;
+  } else {
+    $('g-prog').textContent = `Q${gs.attempts + 1}`;
+  }
+}
+
+function problemText(p) {
+  const sym = { '+': '+', '-': '−', '×': '×', '÷': '÷' };
+  return `${fmt(p.a)} ${sym[p.op]} ${fmt(p.b)}`;
 }
 
 function checkAnswer() {
@@ -606,16 +734,23 @@ function checkAnswer() {
     inp.className = 'answer-inp ok';
     setHint('✓ Correct!', 'ok');
     showStreak();
+
+    if (cfg.missedMode) removeMissed(gs.cur);
+
     setTimeout(() => { gs.attempts++; advance(); }, 500);
+
   } else {
     gs.streak = 0;
     showStreak();
+    gs.wrongCnt++;
     inp.className = 'answer-inp err';
 
-    gs.wrongCnt++;
+    const autoSkip = gs.wrongCnt >= 3;
+    const isPractice = !cfg.missedMode && cfg.mode === 'practice';
 
-    if (cfg.mode === 'practice' || gs.wrongCnt >= 3) {
+    if (autoSkip || isPractice) {
       setHint(`✗  Answer: ${fmt(gs.cur.ans)}`, 'err');
+      if (!cfg.missedMode) addMissed(gs.cur);
       setTimeout(() => { gs.attempts++; nextQ(); }, 1800);
     } else {
       setHint(`✗ Try again (${3 - gs.wrongCnt} left)`, 'err');
@@ -631,7 +766,7 @@ function checkAnswer() {
 function setHint(txt, cls) {
   const h = $('hint');
   h.textContent = txt;
-  h.className = 'hint-line ' + cls;
+  h.className   = 'hint-line ' + cls;
 }
 
 function showStreak() {
@@ -639,7 +774,9 @@ function showStreak() {
 }
 
 function advance() {
-  if (cfg.mode === 'tasks' && gs.attempts >= cfg.taskCnt) { endGame(); return; }
+  if (!cfg.missedMode && cfg.mode === 'tasks' && gs.attempts >= cfg.taskCnt) {
+    endGame(); return;
+  }
   nextQ();
 }
 
@@ -647,48 +784,65 @@ function endGame() {
   clearInterval(gs.ticker);
   const elapsed = Math.round((Date.now() - gs.t0) / 1000);
   const acc     = gs.attempts > 0 ? Math.round(gs.correct / gs.attempts * 100) : 0;
+  const remain  = loadMissed().length;
 
   $('r-correct').textContent = gs.correct;
   $('r-acc').textContent     = acc + '%';
   $('r-streak').textContent  = gs.bestStreak;
   $('r-time').textContent    = elapsed + 's';
 
-  const [icon, title] =
-    acc >= 90 ? ['&#127942;', 'Outstanding!'] :
-    acc >= 70 ? ['&#129504;', 'Great job!']   :
-    acc >= 50 ? ['&#128170;', 'Keep going!']  :
-               ['&#128218;', 'Practice makes perfect!'];
+  let icon, title, sub;
+  if (gs.allCleared) {
+    icon  = '&#127881;';
+    title = 'Bank Cleared!';
+    sub   = 'You answered every missed problem correctly!';
+  } else if (cfg.missedMode) {
+    icon  = acc >= 80 ? '&#129352;' : '&#128170;';
+    title = acc >= 80 ? 'Solid work!' : 'Keep chipping away!';
+    sub   = `${gs.correct} cleared · ${remain} problem${remain !== 1 ? 's' : ''} remaining in bank`;
+  } else {
+    [icon, title] =
+      acc >= 90 ? ['&#127942;', 'Outstanding!'] :
+      acc >= 70 ? ['&#129504;', 'Great job!']   :
+      acc >= 50 ? ['&#128170;', 'Keep going!']  :
+                 ['&#128218;', 'Practice makes perfect!'];
+    sub = `${gs.correct} correct out of ${gs.attempts} attempts`;
+  }
 
-  $('r-icon').innerHTML  = icon;
+  $('r-icon').innerHTML    = icon;
   $('r-title').textContent = title;
-  $('r-sub').textContent   = `${gs.correct} correct out of ${gs.attempts} attempts`;
+  $('r-sub').textContent   = sub;
   show('results');
+  refreshMissedUI();
 }
 
-// ── BUTTON WIRING ───────────────────────────────────────────────
+// ── BUTTON WIRING ────────────────────────────────────────────────
 $('start-btn').addEventListener('click', startGame);
 $('again-btn').addEventListener('click', startGame);
-$('settings-btn').addEventListener('click', () => show('setup'));
+$('settings-btn').addEventListener('click', () => { refreshMissedUI(); show('setup'); });
 $('check-btn').addEventListener('click', checkAnswer);
 $('quit-btn').addEventListener('click', endGame);
 
 $('skip-btn').addEventListener('click', () => {
-  if (cfg.mode === 'practice') {
-    setHint(`Answer: ${fmt(gs.cur.ans)}`, 'err');
-    setTimeout(() => { gs.attempts++; nextQ(); }, 1500);
-  } else {
-    gs.attempts++;
-    gs.streak = 0;
-    showStreak();
-    advance();
+  if (!cfg.missedMode) {
+    if (cfg.mode === 'practice') {
+      setHint(`Answer: ${fmt(gs.cur.ans)}`, 'err');
+      addMissed(gs.cur);
+      setTimeout(() => { gs.attempts++; nextQ(); }, 1500);
+      return;
+    }
+    addMissed(gs.cur);
   }
+  gs.attempts++;
+  gs.streak = 0;
+  showStreak();
+  advance();
 });
 
 $('answer-inp').addEventListener('keydown', e => {
   if (e.key === 'Enter') { e.preventDefault(); checkAnswer(); }
 });
 
-// auto-advance the instant the typed number matches
 $('answer-inp').addEventListener('input', function () {
   const num = parseInt(this.value.trim(), 10);
   if (!isNaN(num) && gs.cur && num === gs.cur.ans) {
@@ -697,7 +851,7 @@ $('answer-inp').addEventListener('input', function () {
   }
 });
 
-// ── iOS INSTALL BANNER ──────────────────────────────────────────
+// ── iOS INSTALL BANNER ───────────────────────────────────────────
 const isIOS        = /iphone|ipad|ipod/i.test(navigator.userAgent);
 const isStandalone = window.navigator.standalone;
 if (isIOS && !isStandalone && !sessionStorage.getItem('hint-off')) {
@@ -708,10 +862,13 @@ $('install-x').addEventListener('click', () => {
   sessionStorage.setItem('hint-off', '1');
 });
 
-// ── SERVICE WORKER ──────────────────────────────────────────────
+// ── SERVICE WORKER ───────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
+
+// ── INIT ─────────────────────────────────────────────────────────
+refreshMissedUI();
 </script>
 </body>
 </html>
